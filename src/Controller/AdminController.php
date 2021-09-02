@@ -28,7 +28,7 @@ class AdminController extends AppController
         if($this->request->getQuery()==null){
             $keyword = null;
         }else{
-            $keyword = $this->request->getQuery()['keyword'];
+            $keyword = $this->request->getQuery('keyword');
         }
 
         $this->loadModels(['OrderList']);
@@ -115,7 +115,7 @@ class AdminController extends AppController
             if($this->request->getQuery()==null){
                 $keyword = null;
             }else{
-                $keyword = $this->request->getQuery()['keyword'];
+                $keyword = $this->request->getQuery('keyword');
             }
             $Deliverers = $this->paginate(
                 $this->Deliverer->find('all',[

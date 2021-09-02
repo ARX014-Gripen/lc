@@ -29,7 +29,7 @@ class UsersController extends AppController
         if($this->request->getQuery()==null){
             $keyword = null;
         }else{
-            $keyword = $this->request->getQuery()['keyword'];
+            $keyword = $this->request->getQuery('keyword');
         }
 
         $Users = $this->paginate(

@@ -1,9 +1,9 @@
 <?php
 return [
     'nextActive' => '<a class="pagination-next has-text-weight-bold" href="{{url}}">{{text}}</a>',
-    'nextDisabled' => '<a class="pagination-next has-text-weight-bold" href="{{url}}">{{text}}</a>',
+    'nextDisabled' => '',
     'prevActive' => '<a class="pagination-previous has-text-weight-bold" href="{{url}}">{{text}}</a>',
-    'prevDisabled' => '<a class="pagination-previous has-text-weight-bold" href="{{url}}">{{text}}</a>',
+    'prevDisabled' => '',
     'first' => '<a class="pagination-previous has-text-weight-bold" href="{{url}}">{{text}}</a>',
     'last' => '<a class="pagination-previous has-text-weight-bold" href="{{url}}">{{text}}</a>',
     'number' => '<a class="pagination-link has-text-weight-bold" href="{{url}}">{{text}}</a>',
