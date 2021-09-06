@@ -26,7 +26,6 @@ class OrdererController extends AppController
      */
     public function index()
     {
-
         $this->loadModels(['Orderer','OrderList']);
 
         $orderer = $this->Orderer->find()->where(['id' => $this->Auth->user('id')])->first();
@@ -36,7 +35,8 @@ class OrdererController extends AppController
             'deliverer_id'=>'OrderList.deliverer_id',
             'orderer_id'=>'OrderList.orderer_id',
             'item_name'=>'OrderList.item_name',
-            'address'=>'Orderer.address'
+            'address'=>'Orderer.address',
+            'created' => 'OrderList.created'
          ])->where(['orderer_id' => $this->Auth->user('id'),'status' => 'ordered'])->order(['order_id' => 'DESC']));
 
         $this->set(compact('orderer','orderList'));

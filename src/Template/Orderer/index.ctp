@@ -72,6 +72,8 @@
                                 <p class="subtitle is-6"><?= $this->Number->format($order->order_id) ?></p>
                                 <p class="title is-6">商品名</p>
                                 <p class="subtitle is-6"><?= h($order->item_name) ?></p>
+                                <p class="title is-6">購入日時</p>
+                                <p class="subtitle is-6"><?= h($order->created) ?></p>
                             </div>
                         </div>
                     </div>
