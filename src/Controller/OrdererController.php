@@ -51,7 +51,6 @@ class OrdererController extends AppController
     {
         $orderer = $this->Orderer->newEntity();
         if ($this->request->is('post')) {
-
             // APIから届け先の座標情報取得
             $url = 'https://www.geocoding.jp/api/?q='.$this->request->getData('address');
             $http = new Client();
@@ -128,57 +127,63 @@ class OrdererController extends AppController
         $orderList = $this->OrderList->newEntity();
 
         if ($this->request->is('post')) {
+            $today = date("Y-m-d");
+            $delivery_date = $this->request->getData('delivery_date');
 
-            $orderer = $this->Orderer->get($this->Auth->user('id'));
-            $deliverers = $this->Deliverer->find('all')->all()->toList();
-            // 届け先の座標を設定
-            $start_lat = $orderer->lat;
-            $start_lng = $orderer->lng;
+            if($today>=$delivery_date['year'].'-'.$delivery_date['month'].'-'.$delivery_date['day']){
+                $this->Flash->error(__('配達日は翌日以降してください。'));
+            }else{
+                $orderer = $this->Orderer->get($this->Auth->user('id'));
+                $deliverers = $this->Deliverer->find('all')->all()->toList();
+                // 届け先の座標を設定
+                $start_lat = $orderer->lat;
+                $start_lng = $orderer->lng;
+        
+                /////////////////////////////
+                // 各店舗の距離を計算
+                $sortList = array();
+                foreach($deliverers as $key => $deliverer){
+                
+                    // 届け元候補の座標設定
+                    $end_key = $deliverer['id'];
+                    $end_lat = $deliverer['lat'];
+                    $end_lng = $deliverer['lng'];
+                
+                    // 緯度、経度の移動量を計算
+                    $lat_dist = ($start_lat - $end_lat);if($lat_dist<0)$lat_dist=$lat_dist*-1;
+                    $lng_dist = ($start_lng - $end_lng);if($lng_dist<0)$lng_dist=$lng_dist*-1;
+                
+                    // 緯度位置における経度量を計算　地球は丸い
+                    $m_lng = 30.9221438 * cos($start_lat / 180 * pi());
+                    if($m_lng<0)$m_lng=$m_lng*-1;
+                
+                    // 移動量を計算
+                    $distance = (int)(sqrt(pow(abs($lat_dist / 0.00027778 * 30.9221438), 2) + pow(abs($lng_dist / 0.00027778 * $m_lng), 2)));  
+        
+                    // 届け元候補リストに情報を追加
+                    $sortList = array_merge(array('_'.$end_key=>$distance),$sortList);
+                }
+        
+                // 最寄りの店舗をソート(昇順)で洗い出し
+                asort($sortList);
+        
+                // 最寄り(先頭要素)の店舗情報回収
+                $first_value = reset($sortList);
+                $first_key = ltrim(key($sortList),'_');
+        
+                // 配達者の選定と注文完了状態を設定
+                $this->request = $this->request->withData('orderer_id', (int)$this->Auth->user('id'));
+                $this->request = $this->request->withData('deliverer_id', (int)$first_key);
+                $this->request = $this->request->withData('status', 'ordered');
     
-            /////////////////////////////
-            // 各店舗の距離を計算
-            $sortList = array();
-            foreach($deliverers as $key => $deliverer){
-            
-                // 届け元候補の座標設定
-                $end_key = $deliverer['id'];
-                $end_lat = $deliverer['lat'];
-                $end_lng = $deliverer['lng'];
-            
-                // 緯度、経度の移動量を計算
-                $lat_dist = ($start_lat - $end_lat);if($lat_dist<0)$lat_dist=$lat_dist*-1;
-                $lng_dist = ($start_lng - $end_lng);if($lng_dist<0)$lng_dist=$lng_dist*-1;
-            
-                // 緯度位置における経度量を計算　地球は丸い
-                $m_lng = 30.9221438 * cos($start_lat / 180 * pi());
-                if($m_lng<0)$m_lng=$m_lng*-1;
-            
-                // 移動量を計算
-                $distance = (int)(sqrt(pow(abs($lat_dist / 0.00027778 * 30.9221438), 2) + pow(abs($lng_dist / 0.00027778 * $m_lng), 2)));  
+                $orderList = $this->OrderList->patchEntity($orderList, $this->request->getData());
+                if ($this->OrderList->save($orderList)) {
+                    $this->Flash->success(__('注文が完了しました。'));
     
-                // 届け元候補リストに情報を追加
-                $sortList = array_merge(array('_'.$end_key=>$distance),$sortList);
+                    return $this->redirect(['action' => 'index']);
+                }
+                $this->Flash->error(__('注文に失敗しました。'));
             }
-    
-            // 最寄りの店舗をソート(昇順)で洗い出し
-            asort($sortList);
-    
-            // 最寄り(先頭要素)の店舗情報回収
-            $first_value = reset($sortList);
-            $first_key = ltrim(key($sortList),'_');
-    
-            // 配達者の選定と注文完了状態を設定
-            $this->request = $this->request->withData('orderer_id', (int)$this->Auth->user('id'));
-            $this->request = $this->request->withData('deliverer_id', (int)$first_key);
-            $this->request = $this->request->withData('status', 'ordered');
-
-            $orderList = $this->OrderList->patchEntity($orderList, $this->request->getData());
-            if ($this->OrderList->save($orderList)) {
-                $this->Flash->success(__('注文が完了しました。'));
-
-                return $this->redirect(['action' => 'index']);
-            }
-            $this->Flash->error(__('注文に失敗しました。'));
         }
 
         $this->set(compact('orderList'));

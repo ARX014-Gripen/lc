@@ -64,6 +64,7 @@
                         <th scope="col"><?= $this->Paginator->sort('deliverer_id','配達者ID') ?></th>
                         <th scope="col"><?= $this->Paginator->sort('deliverer_name','配達者名') ?></th>
                         <th scope="col"><?= $this->Paginator->sort('item_name','商品名') ?></th>
+                        <th scope="col"><?= $this->Paginator->sort('delivery_date','配達日') ?></th>
                         <th scope="col"><?= $this->Paginator->sort('status','ステータス') ?></th>
                         <th scope="col" class="actions"><?= __('操作') ?></th>
                     </tr>
@@ -81,6 +82,7 @@
                             <td><?= h($order->deliverer_id) ?></td>
                             <td><?= mb_strimwidth( h($order->deliverer_name), 0, 10, '…', 'UTF-8' ); ?></td>
                             <td><?= mb_strimwidth( h($order->item_name), 0, 10, '…', 'UTF-8' ); ?></td>
+                            <td><?= h($order->delivery_date) ?></td>
                             <td><?= h($order->status) ?></td>
                             <td class="actions">
                                 <?= $this->Html->link(__('注文表示'), ['action' => 'view', $order->order_id],['class'=>'button is-small is-info has-text-weight-bold']) ?>

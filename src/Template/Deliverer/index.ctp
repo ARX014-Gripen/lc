@@ -71,6 +71,8 @@
                                 <p class="subtitle is-6"><?= h($order->orderer_name) ?></p>
                                 <p class="title is-6">アイテム名</p>
                                 <p class="subtitle is-6"><?= h($order->item_name) ?></p>
+                                <p class="title is-6">配達日</p>
+                                <p class="subtitle is-6"><?= h($order->delivery_date) ?></p>
                             </div>
                             <footer class="card-footer">
                                 <p class="card-footer-item">
@@ -80,7 +82,7 @@
                                 </p>
                                 <p class="card-footer-item">
                                     <span>
-                                        <?= $this->Form->postLink(__('配達完了'), ['action' => 'delivered', $order->id], ['block'=>true,'class'=>'button is-danger has-text-weight-bold','confirm' => __(' ID：{0} の配達を完了します。よろしいですか?', $order->id)]) ?>
+                                        <?= $this->Form->postLink(__('配達完了'), ['action' => 'delivered', $order->order_id], ['block'=>true,'class'=>'button is-danger has-text-weight-bold','confirm' => __(' ID：{0} の配達を完了します。よろしいですか?', $order->order_id)]) ?>
                                     </span>
                                 </p>
                             </footer>

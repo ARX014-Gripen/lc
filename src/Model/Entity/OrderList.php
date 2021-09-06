@@ -32,6 +32,7 @@ class OrderList extends Entity
         'deliverer_id' => true,
         'orderer_id' => true,
         'item_name' => true,
+        'delivery_date' => true,
         'status' => true,
         'created' => true,
         'modified' => true,

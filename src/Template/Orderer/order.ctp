@@ -45,6 +45,14 @@
       </div>
       <?php echo $this->Form->error('item_name') ?>
     </div>
+    <div class="field">
+      <label class="label">商品名</label>
+      <div class="control">
+        <?= $this->Form->date("delivery_date",['placeholder'=>'商品名を入力してください','class'=>'input','required'=>true,'monthNames' => false]) ?>
+        Y/M/D
+      </div>
+      <?php echo $this->Form->error('item_name') ?>
+    </div>
     <div class="has-text-centered">
       <div class="field">
         <?= $this->Form->button('注文',['class'=>'button is-success']); ?>
