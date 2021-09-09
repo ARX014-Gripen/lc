@@ -41,6 +41,7 @@ class AdminController extends AppController
                             'Orderer.name LIKE' => '%'.$keyword.'%',
                             'Deliverer.name LIKE' => '%'.$keyword.'%',
                             'OrderList.item_name LIKE' => '%'.$keyword.'%',
+                            'OrderList.status LIKE' => '%'.$keyword.'%',
                             ]
                         ]
                     ]

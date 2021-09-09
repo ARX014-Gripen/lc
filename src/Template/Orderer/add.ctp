@@ -24,6 +24,9 @@
                     <?= $this->Html->link("注文一覧", ['action' => 'index'],['class'=>'button is-info has-text-weight-bold']) ?>               
                 </span>
                 <span class="navbar-item">
+                    <?= $this->Html->link("注文履歴", ['action' => 'history'],['class'=>'button is-info has-text-weight-bold']) ?>               
+                </span>
+                <span class="navbar-item">
                     <?= $this->Html->link(
                         "ログアウト",['action' => 'logout'],['class' => 'button has-text-weight-bold']
                     ) ?>

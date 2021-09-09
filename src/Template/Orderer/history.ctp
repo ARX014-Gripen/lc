@@ -24,29 +24,21 @@
         </div>
         <div id="navbarMenuHeroC" class="navbar-menu" style="background-color:orange">
             <div class="navbar-end">
-                <?php if ($orderer != null): ?>
-                    <span class="navbar-item">
+                <span class="navbar-item">
                         <?= $this->Html->link(
                             "新規注文",['action' => 'order'],['class' => 'button is-success has-text-weight-bold']
                         ) ?> 
-                    </span> 
-                    <span class="navbar-item">
-                        <?= $this->Html->link(
-                            "注文者情報変更",['action' => 'edit', $orderer->id],['class' => 'button is-info has-text-weight-bold']
-                        ) ?>  
-                    </span>
-                    <span class="navbar-item">
-                        <?= $this->Html->link(
-                            "注文履歴",['action' => 'history'],['class' => 'button is-info has-text-weight-bold']
-                        ) ?>  
-                    </span>                         
-                <?php else: ?>
-                    <span class="navbar-item">
-                        <?= $this->Html->link(
-                            "注文者情報登録",['action' => 'add'],['class' => 'button is-info has-text-weight-bold']
-                        ) ?> 
-                    </span>   
-                <?php endif; ?>                 
+                </span> 
+                <span class="navbar-item">
+                    <?= $this->Html->link(
+                        "注文者情報変更",['action' => 'edit', $orderer->id],['class' => 'button is-info has-text-weight-bold']
+                    ) ?>  
+                </span>
+                <span class="navbar-item">
+                    <?= $this->Html->link(
+                        "注文一覧",['action' => 'index'],['class' => 'button is-info has-text-weight-bold']
+                    ) ?> 
+                </span> 
                 <span class="navbar-item">
                     <?= $this->Html->link(
                         "ログアウト",['action' => 'logout'],['class' => 'button has-text-weight-bold']
@@ -64,7 +56,7 @@
 </p>
 <section class="section">
     <div class="columns is-centered">
-        <h3 class="title has-text-centered is-size-5"><?= __('注文一覧') ?></h3>
+        <h3 class="title has-text-centered is-size-5"><?= __('注文履歴一覧') ?></h3>
     </div>
     <div class="order_list">
         <?php foreach ($orderList as $order): ?>
@@ -79,6 +71,8 @@
                                 <p class="subtitle is-6"><?= h($order->item_name) ?></p>
                                 <p class="title is-6">配達日</p>
                                 <p class="subtitle is-6"><?= h($order->delivery_date) ?></p>
+                                <p class="title is-6">ステータス</p>
+                                <p class="subtitle is-6"><?= h($order->status) ?></p>
                                 <p class="title is-6">購入日時</p>
                                 <p class="subtitle is-6"><?= h($order->created) ?></p>
                             </div>

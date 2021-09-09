@@ -32,14 +32,38 @@ class OrdererController extends AppController
 
         $orderer = $this->Orderer->find()->where(['id' => $this->Auth->user('id')])->first();
 
-        $orderList = $this->paginate($this->OrderList->find('all')->contain('Orderer')->select([ 
+        $orderList = $this->paginate($this->OrderList->find('all')->select([ 
             'order_id'=>'OrderList.id',
             'deliverer_id'=>'OrderList.deliverer_id',
             'orderer_id'=>'OrderList.orderer_id',
             'item_name'=>'OrderList.item_name',
-            'address'=>'Orderer.address',
+            'delivery_date'=>'OrderList.delivery_date',
             'created' => 'OrderList.created'
          ])->where(['orderer_id' => $this->Auth->user('id'),'status' => 'ordered'])->order(['order_id' => 'DESC']));
+
+        $this->set(compact('orderer','orderList'));
+    }
+
+    /**
+     * Index method
+     *
+     * @return \Cake\Http\Response|null
+     */
+    public function history()
+    {
+        $this->loadModels(['Orderer','OrderList']);
+
+        $orderer = $this->Orderer->find()->where(['id' => $this->Auth->user('id')])->first();
+
+        $orderList = $this->paginate($this->OrderList->find('all')->select([ 
+            'order_id'=>'OrderList.id',
+            'deliverer_id'=>'OrderList.deliverer_id',
+            'orderer_id'=>'OrderList.orderer_id',
+            'item_name'=>'OrderList.item_name',
+            'delivery_date'=>'OrderList.delivery_date',
+            'status' => 'OrderList.status',
+            'created' => 'OrderList.created'
+         ])->where(['orderer_id' => $this->Auth->user('id')])->order(['order_id' => 'DESC']));
 
         $this->set(compact('orderer','orderList'));
     }
