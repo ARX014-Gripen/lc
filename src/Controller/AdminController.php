@@ -54,7 +54,7 @@ class AdminController extends AppController
                     'item_name'=>'OrderList.item_name',
                     'status'=>'OrderList.status',
                     'delivery_date'=>'OrderList.delivery_date'
-                    ])->order(['deliverer_id IS NULL DESC','status' => 'DESC','delivery_date' => 'DESC']));
+                    ])->order(['deliverer_id IS NULL DESC','order_id' => 'DESC']));
 
         $this->set(compact('fullOrderList'));
     }
