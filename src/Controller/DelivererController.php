@@ -35,10 +35,9 @@ class DelivererController extends AppController
             'Orderer',
             'GroupByOrderList'=>function($q){
                 return $q->find('all')->select([
-                    'groupOrder_id'=>'GroupByOrderList.orderer_id',
+                    'groupOrder_orderer_id'=>'GroupByOrderList.orderer_id',
                     'groupOrder_delivery_date'=>'GroupByOrderList.delivery_date',
-                    ])->group('groupOrder_delivery_date','groupOrder_id'
-                    );
+                    ])->group('groupOrder_delivery_date');
              }
             ])->select([ 
             'order_id'=>'OrderList.id',
@@ -48,8 +47,9 @@ class DelivererController extends AppController
             'item_name'=>'OrderList.item_name',
             'address'=>'Orderer.address',
             'delivery_date'=>'OrderList.delivery_date',
-         ])->where(['OrderList.deliverer_id' => $this->Auth->user('id'),'OrderList.status' => 'ordered'])
-         ->order(['groupOrder_delivery_date' => 'ASC']));
+         ])->where(['OrderList.deliverer_id' => $this->Auth->user('id'),'OrderList.status' => 'ordered'])->distinct('OrderList.id')->order(['groupOrder_delivery_date' => 'ASC','groupOrder_orderer_id'=>'ASC']));
+        //  ->order(['groupOrder_delivery_date' => 'ASC'])
+        //  ->distinct('OrderList.id'));
 
         $this->set(compact('deliverer','orderList'));
     }

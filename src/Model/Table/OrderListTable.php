@@ -52,7 +52,7 @@ class OrderListTable extends Table
         $this->hasOne('GroupByOrderList', [
             'className' => 'OrderList',
             'foreignKey' => 'id',
-            'bindingKey' => 'id',
+            // 'bindingKey' => 'id',
             'joinType' => 'INNER'
           ]);
     }
