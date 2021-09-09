@@ -5,6 +5,8 @@ use App\Controller\AppController;
 use Cake\Event\Event;
 // use Cake\Network\Http\Client;
 use Cake\Http\Client;
+use Cake\I18n\Time;
+use Cake\Database\Type;
 
 /**
  * Orderer Controller
@@ -175,8 +177,10 @@ class OrdererController extends AppController
                 $this->request = $this->request->withData('orderer_id', (int)$this->Auth->user('id'));
                 $this->request = $this->request->withData('deliverer_id', (int)$first_key);
                 $this->request = $this->request->withData('status', 'ordered');
-    
+                $this->request = $this->request->withData('delivery_date',$delivery_date['year'].'/'.$delivery_date['month'].'/'.$delivery_date['day']);
+
                 $orderList = $this->OrderList->patchEntity($orderList, $this->request->getData());
+
                 if ($this->OrderList->save($orderList)) {
                     $this->Flash->success(__('注文が完了しました。'));
     

@@ -79,7 +79,7 @@ class OrderListTable extends Table
             ->date('delivery_date', ['ymd', 'mdy'])
             ->requirePresence('delivery_date', 'create')
             ->notEmpty('delivery_date');
-
+        
         $validator
             ->scalar('status')
             ->maxLength('status', 255, '255文字以内にしてください。')

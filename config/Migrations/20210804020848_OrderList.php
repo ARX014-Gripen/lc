@@ -29,11 +29,15 @@ class OrderList extends AbstractMigration
             'limit' => 255,
             'null' => false,
         ]);
+        $table->addColumn('delivery_date', 'date', [
+            'default' => null,
+            'null' => false,
+        ]);
         $table->addColumn('status', 'string', [
             'default' => null,
             'limit' => 255,
             'null' => false,
-        ]);
+        ]);        
         $table->addColumn('created', 'datetime', [
             'default' => null,
             'null' => false,
