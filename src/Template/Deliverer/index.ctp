@@ -82,16 +82,15 @@
                                 </p>
                                 <p class="card-footer-item">
                                     <span>
-                                        <?= $this->Form->postLink(__('配達完了'), ['action' => 'delivered', $order->order_id], ['block'=>true,'class'=>'button is-danger has-text-weight-bold','confirm' => __(' ID：{0} の配達を完了します。よろしいですか?', $order->order_id)]) ?>
+                                        <?= $this->Html->link(__('配送完了'),'https://greatspirit.sakura.ne.jp/NA/k_nakamura/lc/deliverer/delivered?id='.$order->order_id, ['class'=>'button is-danger has-text-weight-bold','confirm' => __(' ID：{0} の配達を完了します。よろしいですか?', $order->order_id)]) ?>
                                     </span>
-                                </p>
+                                </p>           
                             </footer>
                         </div>
                     </div>
                 </div>
             </div>
         <?php endforeach; ?>
-        <?= $this->fetch('postLink') ?>
     </div>
     <?php if ($this->Paginator->param('count') > 3): ?>
         <nav class="pagination columns is-centered" style="margin-top:10px;">

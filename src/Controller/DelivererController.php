@@ -47,9 +47,8 @@ class DelivererController extends AppController
             'item_name'=>'OrderList.item_name',
             'address'=>'Orderer.address',
             'delivery_date'=>'OrderList.delivery_date',
-         ])->where(['OrderList.deliverer_id' => $this->Auth->user('id'),'OrderList.status' => 'ordered'])->distinct('OrderList.id')->order(['groupOrder_delivery_date' => 'ASC','groupOrder_orderer_id'=>'ASC']));
-        //  ->order(['groupOrder_delivery_date' => 'ASC'])
-        //  ->distinct('OrderList.id'));
+         ])->where(['OrderList.deliverer_id' => $this->Auth->user('id'),'OrderList.status' => 'ordered']
+         )->distinct('OrderList.id')->order(['groupOrder_delivery_date' => 'ASC','groupOrder_orderer_id'=>'ASC']));
 
         $this->set(compact('deliverer','orderList'));
     }
@@ -138,9 +137,9 @@ class DelivererController extends AppController
      */
     public function delivered($id = null)
     {
-        $this->request->allowMethod(['post', 'delivered']);
-
         $this->loadModels(['OrderList']);
+
+        $id = $this->request->getQuery('id');
 
         $order = $this->OrderList->get($id, [
             'contain' => [],
