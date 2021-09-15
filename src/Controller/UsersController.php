@@ -128,6 +128,11 @@ class UsersController extends AppController
         return $this->redirect(['action' => 'index']);
     }
 
+    public function subpage()
+    {
+
+    }
+
     public function login()
     {
         if ($this->request->isPost()) {
@@ -164,7 +169,7 @@ class UsersController extends AppController
         parent::beforeFilter($event);
         // ここにloginを追加してはならない
         // ソース：https://book.cakephp.org/3.0/en/tutorials-and-examples/blog-auth-example/auth.html
-        $this->Auth->allow(['add', 'logout']);
+        $this->Auth->allow(['add', 'logout','subpage']);
     }
 
     public function isAuthorized($user = null){

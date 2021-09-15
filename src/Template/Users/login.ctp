@@ -1,10 +1,25 @@
 <?php $this->assign('title', 'ログイン'); ?>
+<?= $this->Html->script('burger') ?>
 <section class="hero is-small" style="background-color:orange">
     <div class="hero-body">
         <div class="navbar-brand">
             <p class="title">
                 配送サービス
             </p>
+            <span class="navbar-burger burger" data-target="navbarMenuHeroC">
+                <span></span>
+                <span></span>
+                <span></span>
+            </span>
+        </div>
+        <div id="navbarMenuHeroC" class="navbar-menu" style="background-color:orange">
+            <div class="navbar-end">
+                <span class="navbar-item">
+                    <?= $this->Html->link(
+                        "このアプリについて",['action' => 'subpage'],['class' => 'button is-success has-text-weight-bold']
+                    ) ?>                 
+                </span>
+            </div>
         </div>
     </div>
 </section>
