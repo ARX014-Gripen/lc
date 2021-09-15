@@ -1,0 +1,11 @@
+.subpage-list{
+    padding-left: 25px;
+}
+
+.subpage-list li{
+    padding: 10px 0px;
+}
+
+ul{
+    list-style-type:circle;
+}
