@@ -31,7 +31,7 @@
     </a>
 </p>
 <section class="section">
-    <h1 class="title is-size-5-mobile is-size-3-tablet">ウーバーイーツのようなアプリを作りたかった。</h1>
+    <h1 class="title is-size-5-mobile is-size-3-tablet">ウーバーイーツのような仕組みを作りたかった。</h1>
     <h2 class="subtitle is-size-6-mobile is-size-4-tablet">
         障害を持つ前にジオコーディングに関わる仕事をしていたため<br>
         ポートフォリオとして小さなウーバーイーツのようなアプリを作ってみました。
