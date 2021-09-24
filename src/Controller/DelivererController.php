@@ -15,6 +15,7 @@ use Cake\Http\Client;
  */
 class DelivererController extends AppController
 {
+    // ページネイションの設定
     public $paginate = [
         'limit' => 3 // 1ページに表示するデータ件数
     ];
@@ -26,10 +27,15 @@ class DelivererController extends AppController
      */
     public function index()
     {
+        // 外部モデル呼び出し
         $this->loadModels(['Deliverer','OrderList']);
 
+        // ログインしているユーザの配達者情報を取得
         $deliverer = $this->Deliverer->find()->where(['id' => $this->Auth->user('id')])->first();
 
+        // ログインしているユーザが配達する注文者情報付き注文一覧を取得
+        // ・注文一覧、注文者の結合表、注文日でグループ化された注文一覧の自己結合
+        // ・注文日＞注文者IDの優先度で昇順
         $orderList = $this->paginate($this->OrderList->find('all'
         )->contain([
             'Orderer',
@@ -50,6 +56,7 @@ class DelivererController extends AppController
          ])->where(['OrderList.deliverer_id' => $this->Auth->user('id'),'OrderList.status' => 'ordered']
          )->distinct('OrderList.id')->order(['groupOrder_delivery_date' => 'ASC','groupOrder_orderer_id'=>'ASC']));
 
+        // テンプレートへのデータをセット
         $this->set(compact('deliverer','orderList'));
     }
 
@@ -60,32 +67,55 @@ class DelivererController extends AppController
      */
     public function add()
     {
+        // 新規配達者情報の生成
         $deliverer = $this->Deliverer->newEntity();
+
+        // リクエストが「post」であったか確認
         if ($this->request->is('post')) {
+            // リクエストが「post」であった場合
 
             // APIから届け先の座標情報取得
             $url = 'https://www.geocoding.jp/api/?q='.$this->request->getData('address');
             $http = new Client();
             $response = $http->get($url);
+
+            // 取得した座標情報にエラーがあったか確認
             if($response->getXml()->error){
+                // GeocodingAPIより情報取得に失敗した場合
+
+                // ジオコーダーの座標取得に失敗したことを通知
                 $this->Flash->error(__('ジオコーダーの座標取得に失敗しました。'));
             }else{
+                // GeocodingAPIより情報取得に成功した場合
+
+                // APIより取得したXMLを解析
                 $results = $response->getXml()->coordinate;
                 
-                // 座標を設定
+                // 注文者IDと座標の設定
                 $this->request = $this->request->withData('id', $this->Auth->user('id'));
                 $this->request = $this->request->withData('lat', (float)$results->lat);
                 $this->request = $this->request->withData('lng', (float)$results->lng);
                 
+                // 設定した情報を保存可能な情報に整形
                 $deliverer = $this->Deliverer->patchEntity($deliverer, $this->request->getData());
+                
+                // 配達者情報の保存
                 if ($this->Deliverer->save($deliverer)) {
+                    // 保存処理に成功した場合
+
+                    // 保存処理に成功したことを通知
                     $this->Flash->success(__('配達者情報の登録が完了しました。'));
                 
+                    // 注文一覧へのリダイレクト
                     return $this->redirect(['action' => 'index']);
                 }
+
+                // 保存処理に失敗したことを通知
                 $this->Flash->error(__('配達者情報の登録に失敗しました。'));
             }
         }
+        
+        // テンプレートへのデータをセット
         $this->set(compact('deliverer'));
     }
 
@@ -98,33 +128,56 @@ class DelivererController extends AppController
      */
     public function edit($id = null)
     {
+        // 配達者情報の取得
         $deliverer = $this->Deliverer->get($id, [
             'contain' => [],
         ]);
+
+        // リクエストが「edit」であったか確認
         if ($this->request->is(['patch', 'post', 'put'])) {
+            // リクエストが「edit」であった場合
 
             // APIから届け先の座標情報取得
             $url = 'https://www.geocoding.jp/api/?q='.$this->request->getData('address');
             $http = new Client();
             $response = $http->get($url);
+
+            // 取得した座標情報にエラーがあったか確認
             if($response->getXml()->error){
+                // GeocodingAPIより情報取得に失敗した場合
+
+                // ジオコーダーの座標取得に失敗したことを通知
                 $this->Flash->error(__('ジオコーダーの座標取得に失敗しました。'));
             }else{
+                // GeocodingAPIより情報取得に成功した場合
+
+                // APIより取得したXMLを解析
                 $results = $response->getXml()->coordinate;
 
                 // 座標を設定
                 $this->request = $this->request->withData('lat', (float)$results->lat);
                 $this->request = $this->request->withData('lng', (float)$results->lng);
     
+                // 設定した情報を保存可能な情報に整形
                 $deliverer = $this->Deliverer->patchEntity($deliverer, $this->request->getData());
+
+                // 配達者情報の保存
                 if ($this->Deliverer->save($deliverer)) {
+                    // 保存処理に成功した場合
+
+                    // 保存処理に成功したことを通知
                     $this->Flash->success(__('配達者情報の変更が完了しました。'));
     
+                    // 注文一覧へのリダイレクト
                     return $this->redirect(['action' => 'index']);
                 }
+
+                // 保存処理に失敗したことを通知
                 $this->Flash->error(__('配達者情報の変更に失敗しました。'));    
             }
         }
+
+        // テンプレートへのデータをセット
         $this->set(compact('deliverer'));
     }
 
@@ -137,42 +190,59 @@ class DelivererController extends AppController
      */
     public function delivered($id = null)
     {
+        // 外部モデル呼び出し
         $this->loadModels(['OrderList']);
 
+        // 注文IDの取得
         $id = $this->request->getQuery('id');
 
+        // 指定された注文IDの注文を取得
         $order = $this->OrderList->get($id, [
             'contain' => [],
         ]);
 
+        // 注文に排他済みを設定
         $order->status = "delivered";
 
+        // 指定した注文を保存
         if ($this->OrderList->save($order)) {
+            // 保存が成功した場合
+
+            // 処理成功の通知
             $this->Flash->success(__('ID'.$id.'の注文の配達を完了しました。'));
 
+            // 注文一覧へのリダイレクト
             return $this->redirect(['action' => 'index']);
         }
+
+        // 処理失敗の通知
         $this->Flash->error(__('ID'.$id.'の注文の配達を完了に失敗しました。'));
     }
 
+    // ログアウト
     public function logout(){
+        // 認証情報削除してリダイレクト
+        // 認証設定によりログイン画面に遷移
         return $this->redirect($this->Auth->Logout());
     }
 
+    // コントローラ呼び出し時の処理
     public function beforeFilter(Event $event){
         parent::beforeFilter($event);
+        // 認証で弾くリストからログアウトを除外
         // ここにloginを追加してはならない
         // ソース：https://book.cakephp.org/3.0/en/tutorials-and-examples/blog-auth-example/auth.html
         $this->Auth->allow(['logout']);
     }
 
+    // 認証の設定
     public function isAuthorized($user = null){
-        // Admin can access every action
+        // アカウントの役割が「配達者」、「管理者」のみアクセス可能
         if (isset($user['role']) && ($user['role'] === 'deliverer'||$user['role'] === 'admin')) {
             return true;
         }
 
-        // Default deny
+        // デフォルトはアクセス不可
         return false;
     }
 }

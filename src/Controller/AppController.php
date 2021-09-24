@@ -46,6 +46,7 @@ class AppController extends Controller
         ]);
         $this->loadComponent('Flash');
 
+        // 認証設定
         $this->loadComponent('Auth', [
             'authorize' => ['Controller'], // Added this line
             'authenticate' => [  //送信されたフォームデータのキーとログイン処理の「email」「password」を紐つける設定
@@ -90,6 +91,8 @@ class AppController extends Controller
         //$this->loadComponent('Security');
     }
 
+    // 外部モデル呼び出しを各コントローラー行えるようにするために
+    // 各コントローラで呼び出す予定のAppControllerで設定
     protected function loadModels($models=[])
     {
         foreach ($models as $model) {
