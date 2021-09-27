@@ -7,6 +7,7 @@ use Cake\Event\Event;
 use Cake\Http\Client;
 use Cake\I18n\Time;
 use Cake\Database\Type;
+use Cake\Mailer\Email;
 
 /**
  * Orderer Controller
@@ -208,7 +209,7 @@ class OrdererController extends AppController
     public function order()
     {
         // 外部モデル呼び出し
-        $this->loadModels(['Orderer','Deliverer','OrderList']);
+        $this->loadModels(['Orderer','Deliverer','OrderList','Users']);
 
         // 新規注文情報の生成
         $orderList = $this->OrderList->newEntity();
@@ -286,8 +287,38 @@ class OrdererController extends AppController
                 if ($this->OrderList->save($orderList)) {
                     // 保存処理に成功した場合
 
-                    // 保存処理に成功したことを通知
-                    $this->Flash->success(__('注文が完了しました。'));
+                    // メール本文に必要な情報を取得
+                    $deliverer = $this->Deliverer->get((int)$first_key);
+                    $user = $this->Users->get($this->Auth->user('id'));
+
+                    // メール設定
+                    $email = new Email('Sendgrid');
+                    $email->from(['konakera@gmail.com' => '配送サービス'])
+                        ->transport('SendgridEmail')
+                        ->to($user->email)
+                    ->subject('注文内容');
+
+                    // メール送信
+                    if($email->send("
+{$orderer->name} 様
+
+ご注文頂き、誠にありがとうございます。
+以下のアイテムの注文を承りました。
+・{$this->request->getData('item_name')}
+
+{$deliverer->name}
+が配送を担当させていただきます。
+                    ")){
+                        // メール送信が成功した場合
+
+                        // 保存処理に成功したことを通知
+                        $this->Flash->success(__('注文が完了しました。'));
+                    }else{
+                        // メール送信が失敗した場合
+
+                        // 処理が失敗したことを通知
+                        $this->Flash->error(__('メールの送信に失敗しました。'));
+                    }
     
                     // 注文一覧にリダイレクト
                     return $this->redirect(['action' => 'index']);

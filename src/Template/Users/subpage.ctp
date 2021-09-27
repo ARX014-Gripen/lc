@@ -82,7 +82,7 @@
     <h2 class="subtitle is-size-6-mobile is-size-4-tablet">
         以下の機能を追加予定です。<br><br>
         <ul class="subpage-list">
-            <li>注文内容が記載されたメールを登録メールアドレスに送信。</li>
+            <li><del>注文内容が記載されたメールを登録メールアドレスに送信。</del>2021/9/27実装済み</li>
             <li>管理者アカウントに注文全体の統計機能を追加。</li>
         </ul>
     </h2>
