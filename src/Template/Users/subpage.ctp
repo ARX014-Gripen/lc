@@ -42,7 +42,8 @@
     <h1 class="title is-size-5-mobile is-size-3-tablet">具体的にどんなアプリ？</h1>
     <h2 class="subtitle is-size-6-mobile is-size-4-tablet">
         注文した人に1番近い配達者が選ばれるアプリです。<br><br>
-        注文者と配達者の住所から割り出したGPSの座標を元に、注文時に一番近い住所(座標)の配達者に配達が依頼されます。
+        注文者と配達者の住所から割り出したGPSの座標を元に、注文時に一番近い住所(座標)の配達者に配達が依頼されます。<br><br>
+        注文完了時に注文者アカウントにSendGirdを利用したメールが送信されます。
     </h2>
 </section>
 <section class="section">
@@ -62,6 +63,7 @@
             <li>配達者と注文者の住所は、公共機関のものを使用されると安全です。</li>
             <li>配達者は登録されている全ての配達者から選ばれるため<br>登録時の想定とは違う配達者が選ばれることがあります
                 。</li>
+            <li>メール送信機能をご利用されたい場合は、送信しても問題の無いメールアドレスでのアカウント作成・変更を行ってくだい。</li>
         </ul>
     </h2>
 </section>
@@ -94,6 +96,7 @@
             <li>BULMA</li>
             <li>Geocoding</li>
             <li>GoogleMapURL</li>
+            <li>SendGrid</li>
         </ul>
     </h2>
 </section>
