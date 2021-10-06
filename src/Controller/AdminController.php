@@ -207,6 +207,44 @@ class AdminController extends AppController
         return $this->redirect(['action' => 'index']);
     }
 
+    // BIツール画面
+    public function bi()
+    {
+        // 外部モデル呼び出し
+        $this->loadModels(['OrderList','Users']);
+
+        // 注文数ランキング
+        // 注文表、配達者の結合表
+        $orderList = $this->OrderList->find();
+        $deliverer_ranking = $orderList->contain(['Deliverer']
+            )->select([
+                'order_count' => $orderList->func()->count('OrderList.id'),
+                'deliverer_id' => 'OrderList.deliverer_id',
+                'deliverer_name' => 'Deliverer.name'
+            ])->group('OrderList.deliverer_id')->order(['order_count' => 'DESC'])->limit(5)->all();
+
+        // 役割毎のユーザー数一覧
+        $users =  $this->Users->find();
+        $users_result = $users->select([
+            'role' => 'Users.role',
+            'role_count' => $users->func()->count('Users.id')           
+        ])->group('Users.role')->all()->toList();
+
+        // 役割毎のユーザー数用パイチャートへ向けた振り分け処理
+        $role = array();
+        $role_count = array();
+        foreach($users_result as $key => $result){
+            // 役割リスト作成
+            $role = array_merge(array($result['role']),$role);
+            // ユーザー数リスト作成
+            $role_count = array_merge(array($result['role_count']),$role_count);
+        }
+
+         // テンプレートへのデータをセット
+         $this->set(compact('deliverer_ranking','role','role_count'));
+
+    }
+
     // ログアウト
     public function logout(){
         // 認証情報削除してリダイレクト

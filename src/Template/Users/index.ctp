@@ -29,6 +29,9 @@
                     <?= $this->Html->link("注文一覧", ['controller' => 'Admin','action' => 'index'],['class'=>'button is-success has-text-weight-bold']) ?>               
                 </span>
                 <span class="navbar-item">
+                    <?= $this->Html->link("BIツール", ['controller' => 'Admin','action' => 'bi'],['class'=>'button is-success has-text-weight-bold']) ?>               
+                </span>
+                <span class="navbar-item">
                     <?= $this->Html->link(
                         "ログアウト",['action' => 'logout'],['class' => 'button has-text-weight-bold']
                     ) ?>

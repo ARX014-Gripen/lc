@@ -24,6 +24,9 @@
                     <?= $this->Html->link("注文一覧", ['action' => 'index'],['class'=>'button is-success has-text-weight-bold']) ?>               
                 </span>
                 <span class="navbar-item">
+                    <?= $this->Html->link("BIツール", ['action' => 'bi'],['class'=>'button is-success has-text-weight-bold']) ?>               
+                </span>
+                <span class="navbar-item">
                     <?= $this->Form->postLink(
                         '注文削除',
                         ['action' => 'delete', $id],

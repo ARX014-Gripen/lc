@@ -24,6 +24,9 @@
                     <?= $this->Html->link("ユーザー一覧", ['controller' => 'Users','action' => 'index'],['class'=>'button is-info has-text-weight-bold']) ?>               
                 </span>
                 <span class="navbar-item">
+                    <?= $this->Html->link("BIツール", ['action' => 'bi'],['class'=>'button is-success has-text-weight-bold']) ?>               
+                </span>
+                <span class="navbar-item">
                     <?= $this->Html->link(
                         "ログアウト",['action' => 'logout'],['class' => 'button has-text-weight-bold']
                     ) ?>
