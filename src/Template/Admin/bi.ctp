@@ -49,10 +49,23 @@
         </div>
         <div class="column">
             <h2 class="subtitle is-size-6-mobile is-size-4-tablet">注文数ランキング</h2>
-            <ol class="subpage-list" style="padding-left: 25px;">
-                <?php foreach ($deliverer_ranking as $deliverer): ?>
-                    <li style="padding: 10px 0px;"><?= h($deliverer->deliverer_name) ?></li>
-                <?php endforeach; ?>
+            <?php
+                $rank = 1;
+                $cnt = 1;
+                $bef_point = 0;
+            ?>
+            <?php foreach ($deliverer_ranking as $deliverer): ?>
+                <?php
+                    if($bef_point != $deliverer->order_count){
+                        $rank = $cnt;
+                    }
+                ?>
+                <div style="padding-left: 35px;"><?= h($rank.'．') ?><?= mb_strimwidth( h($deliverer->deliverer_name), 0, 30, '…', 'UTF-8' ); ?></div>
+                <?php
+                    $bef_point = $deliverer->order_count;
+                    $cnt++;
+                ?>
+            <?php endforeach; ?>
             </ol>
         </div>
     </div>
