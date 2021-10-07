@@ -107,5 +107,5 @@
             <p><?= $this->Paginator->counter(['format' => __('{{page}} / {{pages}}ページ, 全{{count}}件')]) ?></p>
         </div>
     </div>
-</div>
+</section>
 

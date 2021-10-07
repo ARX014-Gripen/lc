@@ -61,5 +61,4 @@
       </div>
     </div>
   <?= $this->Form->end() ?>
-</div>
 </section>

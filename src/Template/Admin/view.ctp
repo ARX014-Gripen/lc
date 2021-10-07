@@ -83,6 +83,5 @@
             </tr>
         </table>
     </div>
-</div>
 </section>
 
