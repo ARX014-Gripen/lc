@@ -34,31 +34,35 @@
 </section>
 <?= $this->Flash->render() ?>
 <section class="section">
-  <?= $this->Form->create($deliverer,['class'=>'box is-centered is-4']) ?>
-    <div class="field">
-      <label class="label is-size-5">配達者情報変更</label>
+    <div class="columns is-centered">
+        <div class="column is-half-desktop">
+          <?= $this->Form->create($deliverer,['class'=>'box is-centered is-4']) ?>
+            <div class="field">
+              <label class="label is-size-5">配達者情報変更</label>
+            </div>
+            <div class="field">
+              <label class="label">名前</label>
+              <div class="control">
+                <?= $this->Form->text("name",['placeholder'=>'名前を入力してください','class'=>'input','required'=>true]) ?>
+              </div>
+              <?php echo $this->Form->error('name') ?>
+            </div>
+            <div class="field">
+              <label for="" class="label">住所</label>
+              <div class="control has-icons-left">
+                <?= $this->Form->text("address",['placeholder'=>'住所を入力してください','class'=>'input','required'=>true]) ?>
+                <span class="icon is-small is-left">
+                  <i class="fa fa-home"></i>
+                </span>
+              </div>
+              <?php echo $this->Form->error('address') ?>
+            </div>
+            <div class="has-text-centered">
+              <div class="field">
+                <?= $this->Form->button('変更',['class'=>'button is-success']); ?>
+              </div>
+            </div>
+          <?= $this->Form->end() ?>
+        </div>
     </div>
-    <div class="field">
-      <label class="label">名前</label>
-      <div class="control">
-        <?= $this->Form->text("name",['placeholder'=>'名前を入力してください','class'=>'input','required'=>true]) ?>
-      </div>
-      <?php echo $this->Form->error('name') ?>
-    </div>
-    <div class="field">
-      <label for="" class="label">住所</label>
-      <div class="control has-icons-left">
-        <?= $this->Form->text("address",['placeholder'=>'住所を入力してください','class'=>'input','required'=>true]) ?>
-        <span class="icon is-small is-left">
-          <i class="fa fa-home"></i>
-        </span>
-      </div>
-      <?php echo $this->Form->error('address') ?>
-    </div>
-    <div class="has-text-centered">
-      <div class="field">
-        <?= $this->Form->button('変更',['class'=>'button is-success']); ?>
-      </div>
-    </div>
-  <?= $this->Form->end() ?>
 </section>

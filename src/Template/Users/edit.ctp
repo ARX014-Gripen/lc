@@ -50,34 +50,38 @@
 </section>
 <?= $this->Flash->render() ?>
 <section class="section">
-  <?= $this->Form->create($User,['class'=>'box is-centered is-4']) ?>
-    <div class="field">
-      <label class="label is-size-5">ユーザ情報変更</label>
+    <div class="columns is-centered">
+        <div class="column is-half-desktop">
+          <?= $this->Form->create($User,['class'=>'box is-centered is-4']) ?>
+            <div class="field">
+              <label class="label is-size-5">ユーザ情報変更</label>
+            </div>
+            <div class="field">
+              <label class="label">Email</label>
+              <div class="control has-icons-left has-icons-right">
+                <?= $this->Form->text("email",['placeholder'=>'Emailを入力してください','class'=>'input','required'=>true]) ?>
+                <span class="icon is-small is-left">
+                  <i class="fas fa-envelope"></i>
+                </span>
+              </div>
+              <?php echo $this->Form->error('email') ?>
+            </div>
+            <div class="field">
+              <label for="" class="label">パスワード</label>
+              <div class="control has-icons-left">
+                <?= $this->Form->text("password",['placeholder'=>'*******','class'=>'input','required'=>true,'type'=>'password']) ?>
+                <span class="icon is-small is-left">
+                  <i class="fa fa-lock"></i>
+                </span>
+              </div>
+              <?php echo $this->Form->error('password') ?>
+            </div>
+            <div class="has-text-centered">
+              <div class="field">
+                <?= $this->Form->button('変更',['class'=>'button is-success']); ?>
+              </div>
+            </div>
+          <?= $this->Form->end() ?>
+        </div>
     </div>
-    <div class="field">
-      <label class="label">Email</label>
-      <div class="control has-icons-left has-icons-right">
-        <?= $this->Form->text("email",['placeholder'=>'Emailを入力してください','class'=>'input','required'=>true]) ?>
-        <span class="icon is-small is-left">
-          <i class="fas fa-envelope"></i>
-        </span>
-      </div>
-      <?php echo $this->Form->error('email') ?>
-    </div>
-    <div class="field">
-      <label for="" class="label">パスワード</label>
-      <div class="control has-icons-left">
-        <?= $this->Form->text("password",['placeholder'=>'*******','class'=>'input','required'=>true,'type'=>'password']) ?>
-        <span class="icon is-small is-left">
-          <i class="fa fa-lock"></i>
-        </span>
-      </div>
-      <?php echo $this->Form->error('password') ?>
-    </div>
-    <div class="has-text-centered">
-      <div class="field">
-        <?= $this->Form->button('変更',['class'=>'button is-success']); ?>
-      </div>
-    </div>
-  <?= $this->Form->end() ?>
 </section>
