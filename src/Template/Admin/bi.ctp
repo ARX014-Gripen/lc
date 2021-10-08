@@ -56,13 +56,13 @@
             ?>
             <?php foreach ($deliverer_ranking as $deliverer): ?>
                 <?php
-                    if($bef_point != $deliverer->order_count){
+                    if($bef_point != (int)$deliverer->order_count){
                         $rank = $cnt;
                     }
                 ?>
                 <div style="padding-left: 35px;"><?= h($rank.'．') ?><?= mb_strimwidth( h($deliverer->deliverer_name), 0, 30, '…', 'UTF-8' ); ?></div>
                 <?php
-                    $bef_point = $deliverer->order_count;
+                    $bef_point = (int)$deliverer->order_count;
                     $cnt++;
                 ?>
             <?php endforeach; ?>

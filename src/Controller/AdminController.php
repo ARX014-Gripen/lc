@@ -218,7 +218,7 @@ class AdminController extends AppController
         $orderList = $this->OrderList->find();
         $deliverer_ranking = $orderList->contain(['Deliverer']
             )->select([
-                'order_count' => $orderList->func()->count('OrderList.id'),
+                'order_count' => $orderList->func()->count('*'),
                 'deliverer_id' => 'OrderList.deliverer_id',
                 'deliverer_name' => 'Deliverer.name'
             ])->group('OrderList.deliverer_id')->order(['order_count' => 'DESC'])->limit(5)->all();
