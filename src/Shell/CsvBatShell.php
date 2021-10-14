@@ -69,7 +69,7 @@ class CsvBatShell extends Shell
                     , $order->deliverer_id
                     , $order->deliverer_name
                     , $order->deliverer_address
-                    , $order->$item_name
+                    , $order->item_name
                     , $order->delivery_date
                     , $order->status
                 );
