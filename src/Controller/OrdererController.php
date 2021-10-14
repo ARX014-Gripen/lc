@@ -303,7 +303,7 @@ class OrdererController extends AppController
 {$orderer->name} 様
 
 ご注文頂き、誠にありがとうございます。
-以下のアイテムの注文を承りました。
+以下の商品の注文を承りました。
 ・{$this->request->getData('item_name')}
 
 {$deliverer->name}

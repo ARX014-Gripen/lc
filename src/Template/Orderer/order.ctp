@@ -49,7 +49,7 @@
       <?php echo $this->Form->error('item_name') ?>
     </div>
     <div class="field">
-      <label class="label">商品名</label>
+      <label class="label">配達日</label>
       <div class="control">
         <?= $this->Form->date("delivery_date",['placeholder'=>'商品名を入力してください','class'=>'input','required'=>true,'monthNames' => false]) ?>
         Y/M/D
