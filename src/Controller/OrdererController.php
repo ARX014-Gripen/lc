@@ -293,10 +293,10 @@ class OrdererController extends AppController
 
                     // メール設定
                     $email = new Email('Sendgrid');
-                    $email->from(['konakera@gmail.com' => '配送サービス'])
-                        ->transport('SendgridEmail')
-                        ->to($user->email)
-                    ->subject('注文内容');
+                    $email->setFrom(['konakera@gmail.com' => '配送サービス'])
+                        ->setTransport('SendgridEmail')
+                        ->setTo($user->email)
+                    ->setSubject('注文内容');
 
                     // メール送信
                     if($email->send("
