@@ -73,46 +73,61 @@ class DelivererController extends AppController
         // リクエストが「post」であったか確認
         if ($this->request->is('post')) {
             // リクエストが「post」であった場合
+            
+            // 使用するAPIの仕様で、ごく稀に「緯度0,軽度0」が返ってくることがあるため
+            // その場合は正確な座標が返ってくるまで再取得を実施する
+            $lat = 0;
+            $lng = 0;
+            while($lat==0||$lng==0){
+                // APIから届け先の座標情報取得
+                $url = 'https://www.geocoding.jp/api/?q='.$this->request->getData('address');
+                $http = new Client();
+                $response = $http->get($url);
 
-            // APIから届け先の座標情報取得
-            $url = 'https://www.geocoding.jp/api/?q='.$this->request->getData('address');
-            $http = new Client();
-            $response = $http->get($url);
+                // 取得した座標情報にエラーがあったか確認
+                if($response->getXml()->error){
+                    // GeocodingAPIより情報取得に失敗した場合
 
-            // 取得した座標情報にエラーがあったか確認
-            if($response->getXml()->error){
-                // GeocodingAPIより情報取得に失敗した場合
+                    // ジオコーダーの座標取得に失敗したことを通知
+                    $this->Flash->error(__('ジオコーダーの座標取得に失敗しました。'));
+                    
+                    // テンプレートへのデータをセット
+                    $this->set(compact('deliverer'));
 
-                // ジオコーダーの座標取得に失敗したことを通知
-                $this->Flash->error(__('ジオコーダーの座標取得に失敗しました。'));
-            }else{
-                // GeocodingAPIより情報取得に成功した場合
+                    return;
+                }else{
+                    // GeocodingAPIより情報取得に成功した場合
 
-                // APIより取得したXMLを解析
-                $results = $response->getXml()->coordinate;
-                
-                // 注文者IDと座標の設定
-                $this->request = $this->request->withData('id', $this->Auth->user('id'));
-                $this->request = $this->request->withData('lat', (float)$results->lat);
-                $this->request = $this->request->withData('lng', (float)$results->lng);
-                
-                // 設定した情報を保存可能な情報に整形
-                $deliverer = $this->Deliverer->patchEntity($deliverer, $this->request->getData());
-                
-                // 配達者情報の保存
-                if ($this->Deliverer->save($deliverer)) {
-                    // 保存処理に成功した場合
+                    // APIより取得したXMLを解析
+                    $results = $response->getXml()->coordinate;
 
-                    // 保存処理に成功したことを通知
-                    $this->Flash->success(__('配達者情報の登録が完了しました。'));
-                
-                    // 注文一覧へのリダイレクト
-                    return $this->redirect(['action' => 'index']);
+                    // 取得したXMLより座標を取得
+                    $lat = (float)$results->lat;
+                    $lng = (float)$results->lng;
                 }
-
-                // 保存処理に失敗したことを通知
-                $this->Flash->error(__('配達者情報の登録に失敗しました。'));
             }
+
+            // 注文者IDと座標の設定
+            $this->request = $this->request->withData('id', $this->Auth->user('id'));
+            $this->request = $this->request->withData('lat', (float)$lat);
+            $this->request = $this->request->withData('lng', (float)$lng);
+            
+            // 設定した情報を保存可能な情報に整形
+            $deliverer = $this->Deliverer->patchEntity($deliverer, $this->request->getData());
+            
+            // 配達者情報の保存
+            if ($this->Deliverer->save($deliverer)) {
+                // 保存処理に成功した場合
+
+                // 保存処理に成功したことを通知
+                $this->Flash->success(__('配達者情報の登録が完了しました。'));
+            
+                // 注文一覧へのリダイレクト
+                return $this->redirect(['action' => 'index']);
+            }
+
+            // 保存処理に失敗したことを通知
+            $this->Flash->error(__('配達者情報の登録に失敗しました。'));
         }
         
         // テンプレートへのデータをセット
@@ -137,44 +152,59 @@ class DelivererController extends AppController
         if ($this->request->is(['patch', 'post', 'put'])) {
             // リクエストが「edit」であった場合
 
-            // APIから届け先の座標情報取得
-            $url = 'https://www.geocoding.jp/api/?q='.$this->request->getData('address');
-            $http = new Client();
-            $response = $http->get($url);
+            // 使用するAPIの仕様で、ごく稀に「緯度0,軽度0」が返ってくることがあるため
+            // その場合は正確な座標が返ってくるまで再取得を実施する
+            $lat = 0;
+            $lng = 0;
+            while($lat==0||$lng==0){
+                // APIから届け先の座標情報取得
+                $url = 'https://www.geocoding.jp/api/?q='.$this->request->getData('address');
+                $http = new Client();
+                $response = $http->get($url);
 
-            // 取得した座標情報にエラーがあったか確認
-            if($response->getXml()->error){
-                // GeocodingAPIより情報取得に失敗した場合
+                // 取得した座標情報にエラーがあったか確認
+                if($response->getXml()->error){
+                    // GeocodingAPIより情報取得に失敗した場合
 
-                // ジオコーダーの座標取得に失敗したことを通知
-                $this->Flash->error(__('ジオコーダーの座標取得に失敗しました。'));
-            }else{
-                // GeocodingAPIより情報取得に成功した場合
+                    // ジオコーダーの座標取得に失敗したことを通知
+                    $this->Flash->error(__('ジオコーダーの座標取得に失敗しました。'));
+                    
+                    // テンプレートへのデータをセット
+                    $this->set(compact('deliverer'));
 
-                // APIより取得したXMLを解析
-                $results = $response->getXml()->coordinate;
+                    return;
+                }else{
+                    // GeocodingAPIより情報取得に成功した場合
 
-                // 座標を設定
-                $this->request = $this->request->withData('lat', (float)$results->lat);
-                $this->request = $this->request->withData('lng', (float)$results->lng);
-    
-                // 設定した情報を保存可能な情報に整形
-                $deliverer = $this->Deliverer->patchEntity($deliverer, $this->request->getData());
+                    // APIより取得したXMLを解析
+                    $results = $response->getXml()->coordinate;
 
-                // 配達者情報の保存
-                if ($this->Deliverer->save($deliverer)) {
-                    // 保存処理に成功した場合
-
-                    // 保存処理に成功したことを通知
-                    $this->Flash->success(__('配達者情報の変更が完了しました。'));
-    
-                    // 注文一覧へのリダイレクト
-                    return $this->redirect(['action' => 'index']);
+                    // 取得したXMLより座標を取得
+                    $lat = (float)$results->lat;
+                    $lng = (float)$results->lng;
                 }
-
-                // 保存処理に失敗したことを通知
-                $this->Flash->error(__('配達者情報の変更に失敗しました。'));    
             }
+
+            // 座標を設定
+            $this->request = $this->request->withData('lat', (float)$lat);
+            $this->request = $this->request->withData('lng', (float)$lng);
+            
+            // 設定した情報を保存可能な情報に整形
+            $deliverer = $this->Deliverer->patchEntity($deliverer, $this->request->getData());
+        
+            // 配達者情報の保存
+            if ($this->Deliverer->save($deliverer)) {
+                // 保存処理に成功した場合
+        
+                // 保存処理に成功したことを通知
+                $this->Flash->success(__('配達者情報の変更が完了しました。'));
+            
+                // 注文一覧へのリダイレクト
+                return $this->redirect(['action' => 'index']);
+            }
+        
+            // 保存処理に失敗したことを通知
+            $this->Flash->error(__('配達者情報の変更に失敗しました。'));   
         }
 
         // テンプレートへのデータをセット
