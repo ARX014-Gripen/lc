@@ -43,7 +43,8 @@
     <h2 class="subtitle is-size-6-mobile is-size-4-tablet">
         注文した人に1番近い配達者が選ばれるアプリです。<br><br>
         注文者と配達者の住所から割り出したGPSの座標を元に、注文時に一番近い住所(座標)の配達者に配達が依頼されます。<br><br>
-        注文完了時に注文を行ったアカウントにSendGirdを利用したメールが送信されます。
+        注文完了時に注文を行ったアカウントにSendGirdを利用したメールが送信されます。<br><br>
+        配達者アカウントではGoogleMapによる配達先へのルート検索が行えます。
     </h2>
 </section>
 <section class="section">
