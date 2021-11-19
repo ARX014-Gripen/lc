@@ -47,23 +47,27 @@ class TagsController extends AppController
         $tag = $this->Tags->newEntity();
         if ($this->request->is('post')) {
             
-            $tags = $this->Tags->find(
-                'all'
-            )->where([
-                'Tags.name' => $this->request->getData('name')
-            ])->toList();
-
-            if($tags==null){
-                $tag = $this->Tags->patchEntity($tag, $this->request->getData());
-                if ($this->Tags->save($tag)) {
-                    $this->Flash->success(__('タグの登録に成功しました。'));
-    
-                    return $this->redirect(['action' => 'index']);
-                }
-                
-                $this->Flash->error(__('タグの登録に失敗しました。'));
+            if(preg_match("/[#,\s]/i",$this->request->getData('name'))){
+                $this->Flash->error(__('タグ名に # , スペース は使用できません。'));
             }else{
-                $this->Flash->error(__('既にその名前のタグが登録されています。'));
+                $tags = $this->Tags->find(
+                    'all'
+                )->where([
+                    'Tags.name' => $this->request->getData('name')
+                ])->toList();
+    
+                if($tags==null){
+                    $tag = $this->Tags->patchEntity($tag, $this->request->getData());
+                    if ($this->Tags->save($tag)) {
+                        $this->Flash->success(__('タグの登録に成功しました。'));
+        
+                        return $this->redirect(['action' => 'index']);
+                    }
+                    
+                    $this->Flash->error(__('タグの登録に失敗しました。'));
+                }else{
+                    $this->Flash->error(__('既にその名前のタグが登録されています。'));
+                }
             }
         }
         $items = $this->Tags->Items->find('list', ['limit' => 200]);
@@ -84,27 +88,29 @@ class TagsController extends AppController
         ]);
         if ($this->request->is(['patch', 'post', 'put'])) {
 
-            $tags = $this->Tags->find(
-                'all'
-            )->where([
-                'Tags.name' => $this->request->getData('name')
-            ])->where([
-                'Tags.id IS NOT' => $id
-            ])->toList();
-
-            if($tags==null){
-                $tag = $this->Tags->patchEntity($tag, $this->request->getData());
-                if ($this->Tags->save($tag)) {
-                    $this->Flash->success(__('ID'.$id.'のタグ情報変更に成功しました。'));
-    
-                    return $this->redirect(['action' => 'index']);
-                }
-                $this->Flash->error(__('ID'.$id.'のタグ情報変更に失敗しました。'));
+            if(preg_match("/[#,\s]/i",$this->request->getData('name'))){
+                $this->Flash->error(__('タグ名に # , スペース は使用できません。'));
             }else{
-                $this->Flash->error(__('既にその名前のタグが登録されています。'));
+                $tags = $this->Tags->find(
+                    'all'
+                )->where([
+                    'Tags.name' => $this->request->getData('name')
+                ])->where([
+                    'Tags.id IS NOT' => $id
+                ])->toList();
+    
+                if($tags==null){
+                    $tag = $this->Tags->patchEntity($tag, $this->request->getData());
+                    if ($this->Tags->save($tag)) {
+                        $this->Flash->success(__('ID'.$id.'のタグ情報変更に成功しました。'));
+        
+                        return $this->redirect(['action' => 'index']);
+                    }
+                    $this->Flash->error(__('ID'.$id.'のタグ情報変更に失敗しました。'));
+                }else{
+                    $this->Flash->error(__('既にその名前のタグが登録されています。'));
+                }
             }
-
-            
         }
         $items = $this->Tags->Items->find('list', ['limit' => 200]);
         $this->set(compact('tag', 'items'));
