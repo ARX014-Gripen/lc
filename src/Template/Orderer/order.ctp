@@ -59,7 +59,7 @@
                 <p class="modal-image image is-3by2">
                 </p>
                 <div class="item_id"></div>
-                <p class="has-text-weight-bold is-size-4">たらこスパゲッティ</p>
+                <p class="has-text-weight-bold is-size-4 title-name"></p>
                 <div class="field">
                   <label class="label">配達日</label>
                   <div class="control">
@@ -143,7 +143,7 @@
                                 <div class="card-content">
                                   <div class="media">
                                     <div class="media-content">
-                                      <p class="title is-4"><?= h($Item->item_name) ?></p></p>
+                                      <?php echo "<p class=\"title is-4 title-name-".h($Item->item_id)."\">".h($Item->item_name)."</p>"?>
                                     </div>
                                   </div>
                                   <div class="content">
