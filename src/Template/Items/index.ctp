@@ -59,29 +59,34 @@
             <div class="column"></div>
             <div class="column" style="display: flex;justify-content: space-around;">
                 <?php echo $this->Form->create(null, ["type" => "get","valueSources" => "query"]); ?>
-                    <div class="control" style="display: flex;justify-content: space-around;">
-                        <div class="select is-multiple is-small">
-                            <select multiple size="3" name="tags[]">
-                                <option value="">タグ検索を行わない</option>
-                                <?php foreach ($Tags as $Tag): ?>
-                                    <?php
-                                        $count=0;
-                                        foreach ($selectTags as $selectTag):
-                                            if($selectTag==$Tag->name){
-                                                $count++;
+                    <div class="field has-addons"  style="display: flex;justify-content: space-around;">
+                        <div class="control is-hidden-desktop">
+                            <p class="is-size-7 is-hidden-desktop">検索するタグを選択してください&nbsp;</p>
+                        </div>
+                        <div class="control">
+                            <div class="select is-multiple is-small">
+                                <select multiple size="3" name="tags[]">
+                                    <option value="">タグ検索を行わない</option>
+                                    <?php foreach ($Tags as $Tag): ?>
+                                        <?php
+                                            $count=0;
+                                            foreach ($selectTags as $selectTag):
+                                                if($selectTag==$Tag->name){
+                                                    $count++;
+                                                }
+                                            endforeach;
+                                            if($count>0){
+                                                echo "<option value=".h($Tag->name)." selected>".h($Tag->name)."</option>";
+                                            }else{
+                                                echo "<option value=".h($Tag->name).">".h($Tag->name)."</option>";
                                             }
-                                        endforeach;
-                                        if($count>0){
-                                            echo "<option value=".h($Tag->name)." selected>".h($Tag->name)."</option>";
-                                        }else{
-                                            echo "<option value=".h($Tag->name).">".h($Tag->name)."</option>";
-                                        }
-                                    ?>
-                                <?php endforeach; ?>
-                            </select>
+                                        ?>
+                                    <?php endforeach; ?>
+                                </select>
+                            </div>
                         </div>
                     </div>
-                    <div class="control"style="width:270px;">
+                    <div class="control"style="width:280px;">
                         <?= $this->Form->text("keyword",['placeholder'=>'検索する商品名を入力してください。','class'=>'input is-small']); ?>
                     </div>
                     <div class="control" style="display: flex;justify-content: space-around;">
