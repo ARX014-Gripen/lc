@@ -23,6 +23,7 @@ class CsvBatShell extends Shell
         // ・注文日＞注文者IDの優先度で昇順
         $orderList = $this->OrderList->find('all'
         )->contain([
+            'Items',
             'Orderer',
             'Deliverer',
             'GroupByOrderList'=>function($q){
@@ -39,7 +40,8 @@ class CsvBatShell extends Shell
             'orderer_id'=>'OrderList.orderer_id',
             'orderer_name'=>'Orderer.name',
             'orderer_address'=>'Orderer.address',
-            'item_name'=>'OrderList.item_name',
+            'item_id'=>'OrderList.item_id',
+            'item_name'=>'Items.name',
             'delivery_date'=>'OrderList.delivery_date',
             'status'=>'OrderList.status',
          ])->distinct('OrderList.id')->order(['groupOrder_delivery_date' => 'ASC','groupOrder_orderer_id'=>'ASC']);
@@ -54,7 +56,7 @@ class CsvBatShell extends Shell
         if($f){
         
             // ヘッダーの出力
-            $header = array("注文ID.","注文者ID","注文者名","注文者住所","配達者ID","配達者名","配達者住所","商品名","配達日","ステータス");
+            $header = array("注文ID.","注文者ID","注文者名","注文者住所","配達者ID","配達者名","配達者住所","商品ID","商品名","配達日","ステータス");
             fputcsv($f, $header);
         
             // データの出力
@@ -69,6 +71,7 @@ class CsvBatShell extends Shell
                     , $order->deliverer_id
                     , $order->deliverer_name
                     , $order->deliverer_address
+                    , $order->item_id
                     , $order->item_name
                     , $order->delivery_date
                     , $order->status

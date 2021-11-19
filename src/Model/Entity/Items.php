@@ -4,20 +4,15 @@ namespace App\Model\Entity;
 use Cake\ORM\Entity;
 
 /**
- * OrderList Entity
+ * Items Entity
  *
  * @property int $id
- * @property int|null $deliverer_id
- * @property int $orderer_id
- * @property string $item_name
- * @property string $status
+ * @property string $name
+ * @property string $image
  * @property \Cake\I18n\FrozenTime $created
  * @property \Cake\I18n\FrozenTime $modified
- *
- * @property \App\Model\Entity\Deliverer $na_nakamura_local_deliverer
- * @property \App\Model\Entity\Orderer $na_nakamura_local_orderer
  */
-class OrderList extends Entity
+class Items extends Entity
 {
     /**
      * Fields that can be mass assigned using newEntity() or patchEntity().
@@ -29,14 +24,10 @@ class OrderList extends Entity
      * @var array
      */
     protected $_accessible = [
-        'deliverer_id' => true,
-        'orderer_id' => true,
-        'item_id' => true,
-        'delivery_date' => true,
-        'status' => true,
+        'name' => true,
+        'image' => true,
         'created' => true,
         'modified' => true,
-        'na_nakamura_local_deliverer' => true,
-        'na_nakamura_local_orderer' => true,
+        'na_nakamura_local_tags' => true
     ];
 }

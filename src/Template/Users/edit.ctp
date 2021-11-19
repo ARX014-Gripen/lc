@@ -34,10 +34,19 @@
                     ?>
                 </span>
                 <span class="navbar-item">
-                    <?= $this->Html->link("ユーザー一覧", ['action' => 'index'],['class'=>'button is-info has-text-weight-bold']) ?>               
+                    <?= $this->Html->link("注文一覧", ['controller' => 'Admin','action' => 'index'],['class'=>'button is-success has-text-weight-bold']) ?>               
                 </span>
                 <span class="navbar-item">
-                    <?= $this->Html->link("注文一覧", ['controller' => 'Admin','action' => 'index'],['class'=>'button is-success has-text-weight-bold']) ?>               
+                    <?= $this->Html->link("BIツール", ['controller' => 'Admin','action' => 'bi'],['class'=>'button is-success has-text-weight-bold']) ?>               
+                </span>
+                <span class="navbar-item">
+                    <?= $this->Html->link("商品一覧", ['controller' => 'Items','action' => 'index'],['class'=>'button is-info has-text-weight-bold']) ?>               
+                </span>
+                <span class="navbar-item">
+                    <?= $this->Html->link("タグ一覧", ['controller' => 'Tags','action' => 'index'],['class'=>'button is-info has-text-weight-bold']) ?>               
+                </span>
+                <span class="navbar-item">
+                    <?= $this->Html->link("ユーザー一覧", ['action' => 'index'],['class'=>'button is-info has-text-weight-bold']) ?>               
                 </span>
                 <span class="navbar-item">
                     <?= $this->Html->link(

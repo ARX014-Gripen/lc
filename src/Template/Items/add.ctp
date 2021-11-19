@@ -1,10 +1,10 @@
 <?php
 /**
  * @var \App\View\AppView $this
- * @var \App\Model\Entity\User $User
+ * @var \App\Model\Entity\Orderer $orderer
  */
 ?>
-<?php $this->assign('title', 'ユーザー登録'); ?>
+<?php $this->assign('title', '商品登録'); ?>
 <?= $this->Html->script('burger') ?>
 <section class="hero is-small" style="background-color:orange">
     <div class="hero-body">
@@ -33,7 +33,7 @@
                     <?= $this->Html->link("タグ一覧", ['controller' => 'Tags','action' => 'index'],['class'=>'button is-info has-text-weight-bold']) ?>               
                 </span>
                 <span class="navbar-item">
-                    <?= $this->Html->link("ユーザー一覧", ['action' => 'index'],['class'=>'button is-info has-text-weight-bold']) ?>               
+                    <?= $this->Html->link("ユーザー一覧", ['controller' => 'Users','action' => 'index'],['class'=>'button is-info has-text-weight-bold']) ?>               
                 </span>
                 <span class="navbar-item">
                     <?= $this->Html->link(
@@ -48,35 +48,36 @@
 <section class="section">
     <div class="columns is-centered">
         <div class="column is-half-desktop">
-          <?= $this->Form->create($User,['class'=>'box is-centered is-4']) ?>
+          <?= $this->Form->create($Item,['class'=>'box is-centered is-4','enctype' => 'multipart/form-data']) ?>
             <div class="field">
-              <label class="label is-size-5">ユーザ情報登録</label>
+              <label class="label is-size-5">商品登録</label>
             </div>
             <div class="field">
-              <label class="label">Email</label>
-              <div class="control has-icons-left has-icons-right">
-                <?= $this->Form->text("email",['placeholder'=>'Emailを入力してください','class'=>'input','required'=>true]) ?>
-                <span class="icon is-small is-left">
-                  <i class="fas fa-envelope"></i>
-                </span>
+              <label class="label">商品名</label>
+              <div class="control">
+                <?= $this->Form->text("name",['placeholder'=>'商品名を入力してください','class'=>'input','required'=>true]) ?>
               </div>
-              <?php echo $this->Form->error('email') ?>
+              <?php echo $this->Form->error('name') ?>
             </div>
             <div class="field">
-              <label for="" class="label">パスワード</label>
-              <div class="control has-icons-left">
-                <?= $this->Form->text("password",['placeholder'=>'*******','class'=>'input','required'=>true,'type'=>'password']) ?>
-                <span class="icon is-small is-left">
-                  <i class="fa fa-lock"></i>
-                </span>
+              <label for="" class="label">画像</label>
+              <div class="control">
+                <input type="file" name="image" accept="image/*" required>
               </div>
-              <?php echo $this->Form->error('password') ?>
+              <?php echo $this->Form->error('image') ?>
             </div>
             <div class="field">
-              <label for="" class="label">役割</label>
-              <div class="control has-icons-left">
-                <?= $this->Form->select("role",['admin'=>'管理者','deliverer'=>'配達者','orderer'=>'注文者'],['class'=>'select',]) ?>
+              <label for="" class="label">タグ</label>
+              <div class="control">
+                <div class="select is-multiple">
+                    <select multiple size="3" name="tags[]" required>
+                        <?php foreach ($Tags as $Tag): ?>
+                            <?php  echo "<option value=".h($Tag->id).">".h($Tag->name)."</option>" ?>
+                        <?php endforeach; ?>
+                    </select>
+                </div>
               </div>
+              <?php echo $this->Form->error('tags') ?>
             </div>
             <div class="has-text-centered">
               <div class="field">
@@ -87,3 +88,4 @@
         </div>
     </div>
 </section>
+

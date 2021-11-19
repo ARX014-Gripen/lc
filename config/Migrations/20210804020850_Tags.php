@@ -1,7 +1,7 @@
 <?php
 use Migrations\AbstractMigration;
 
-class Users extends AbstractMigration
+class Tags extends AbstractMigration
 {
     /**
      * Change Method.
@@ -13,22 +13,12 @@ class Users extends AbstractMigration
     public function change()
     {
         // idが主キーでついた状態でテーブルを定義
-        $table = $this->table('na_nakamura_local_users');
-        
+        $table = $this->table('na_nakamura_local_tags');
+    
         // 各カラムの定義を追加
-        $table->addColumn('email', 'string', [
+        $table->addColumn('name', 'string', [
             'default' => null,
-            'limit' => 255,
-            'null' => false,
-        ]);
-        $table->addColumn('password', 'string', [
-            'default' => null,
-            'limit' => 255,
-            'null' => false,
-        ]);
-        $table->addColumn('role', 'string', [
-            'default' => null,
-            'limit' => 20,
+            'limit' => 45,
             'null' => false,
         ]);
         $table->addColumn('created', 'datetime', [
@@ -41,8 +31,8 @@ class Users extends AbstractMigration
         ]);
 
         // UNIQUE制約を定義に追加
-        $table->addIndex('email', ['unique' => true]);
-
+        $table->addIndex('name', ['unique' => true]);
+    
         // テーブルを作成
         $table->create();
     }

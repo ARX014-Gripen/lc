@@ -21,10 +21,7 @@
         <div id="navbarMenuHeroC" class="navbar-menu" style="background-color:orange">
             <div class="navbar-end">
                 <span class="navbar-item">
-                    <?= $this->Html->link("注文一覧", ['action' => 'index'],['class'=>'button is-success has-text-weight-bold']) ?>               
-                </span>
-                <span class="navbar-item">
-                    <?= $this->Html->link("BIツール", ['action' => 'bi'],['class'=>'button is-success has-text-weight-bold']) ?>               
+                    <?= $this->Html->link("配達者変更", ['action' => 'edit', $fullOrder->id],['class'=>'button is-warning has-text-weight-bold']) ?>               
                 </span>
                 <span class="navbar-item">
                     <?= $this->Form->postLink(
@@ -33,6 +30,18 @@
                         ['class' => 'button is-danger has-text-weight-bold','confirm' => __('変更中の注文を削除しますか?')]
                         )
                     ?>
+                </span>
+                <span class="navbar-item">
+                    <?= $this->Html->link("注文一覧", ['action' => 'index'],['class'=>'button is-success has-text-weight-bold']) ?>               
+                </span>
+                <span class="navbar-item">
+                    <?= $this->Html->link("BIツール", ['action' => 'bi'],['class'=>'button is-success has-text-weight-bold']) ?>               
+                </span>
+                <span class="navbar-item">
+                    <?= $this->Html->link("商品一覧", ['controller' => 'Items','action' => 'index'],['class'=>'button is-info has-text-weight-bold']) ?>               
+                </span>
+                <span class="navbar-item">
+                    <?= $this->Html->link("タグ一覧", ['controller' => 'Tags','action' => 'index'],['class'=>'button is-info has-text-weight-bold']) ?>               
                 </span>
                 <span class="navbar-item">
                     <?= $this->Html->link("ユーザー一覧", ['controller' => 'Users','action' => 'index'],['class'=>'button is-info has-text-weight-bold']) ?>               

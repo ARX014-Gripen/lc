@@ -47,19 +47,19 @@ class AdminController extends AppController
                         'OR'=>[
                             'Orderer.name LIKE' => '%'.$keyword.'%',
                             'Deliverer.name LIKE' => '%'.$keyword.'%',
-                            'OrderList.item_name LIKE' => '%'.$keyword.'%',
+                            'Items.name LIKE' => '%'.$keyword.'%',
                             'OrderList.status LIKE' => '%'.$keyword.'%',
                             ]
                         ]
                     ]
-                ])->contain(['Orderer','Deliverer']
+                ])->contain(['Orderer','Deliverer','Items']
                 )->select([ 
                     'order_id'=>'OrderList.id',
                     'orderer_id'=>'Orderer.id',
                     'orderer_name'=>'Orderer.name',
                     'deliverer_id'=>'Deliverer.id',
                     'deliverer_name'=>'Deliverer.name',
-                    'item_name'=>'OrderList.item_name',
+                    'item_name'=>'Items.name',
                     'status'=>'OrderList.status',
                     'delivery_date'=>'OrderList.delivery_date'
                     ])->order(['deliverer_id IS NULL DESC','order_id' => 'DESC']));
@@ -83,13 +83,13 @@ class AdminController extends AppController
         // 1件分の詳細情報付き注文情報を取得
         // ・注文表、注文者、配達者の結合表
         // ・対象の注文番号で検索
-        $fullOrder = $this->OrderList->find()->contain(['Orderer','Deliverer'])->select([ 
+        $fullOrder = $this->OrderList->find()->contain(['Orderer','Deliverer','Items'])->select([ 
             'id',
             'orderer_id'=>'Orderer.id',
             'orderer_name'=>'Orderer.name',
             'deliverer_id'=>'Deliverer.id',
             'deliverer_name'=>'Deliverer.name',
-            'item_name'=>'OrderList.item_name',
+            'item_name'=>'Items.name',
             'status'=>'OrderList.status',
          ])->where(['OrderList.id' => $id])->first();
 

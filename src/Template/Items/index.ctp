@@ -1,10 +1,4 @@
-<?php
-/**
- * @var \App\View\AppView $this
- * @var \App\Model\Entity\Orderer $orderer
- */
-?>
-<?php $this->assign('title', '注文'); ?>
+<?php $this->assign('title', '商品一覧'); ?>
 <?= $this->Html->script('//cdnjs.cloudflare.com/ajax/libs/jquery-infinitescroll/2.1.0/jquery.infinitescroll.min.js') ?>
 <?= $this->Html->script('item_scroll') ?>
 <?= $this->Html->script('burger') ?>
@@ -25,10 +19,21 @@
         <div id="navbarMenuHeroC" class="navbar-menu" style="background-color:orange">
             <div class="navbar-end">
                 <span class="navbar-item">
-                    <?= $this->Html->link("配達予定", ['action' => 'index'],['class'=>'button is-info has-text-weight-bold']) ?>               
+                    <?= $this->Html->link(
+                        "商品登録",['action' => 'add'],['class' => 'button is-success has-text-weight-bold']
+                    ) ?>                 
                 </span>
                 <span class="navbar-item">
-                    <?= $this->Html->link("注文履歴", ['action' => 'history'],['class'=>'button is-info has-text-weight-bold']) ?>               
+                    <?= $this->Html->link("注文一覧", ['controller' => 'Admin','action' => 'index'],['class'=>'button is-success has-text-weight-bold']) ?>               
+                </span>
+                <span class="navbar-item">
+                    <?= $this->Html->link("BIツール", ['controller' => 'Admin','action' => 'bi'],['class'=>'button is-success has-text-weight-bold']) ?>               
+                </span>
+                <span class="navbar-item">
+                    <?= $this->Html->link("タグ一覧", ['controller' => 'Tags','action' => 'index'],['class'=>'button is-info has-text-weight-bold']) ?>               
+                </span>
+                <span class="navbar-item">
+                    <?= $this->Html->link("ユーザー一覧", ['controller' => 'Users','action' => 'index'],['class'=>'button is-info has-text-weight-bold']) ?>               
                 </span>
                 <span class="navbar-item">
                     <?= $this->Html->link(
@@ -47,47 +52,10 @@
 </p>
 <section class="section">
     <div class="container">
-        <div class="modal">
-          <div class="modal-background"></div>
-          <div class="modal-card">
-            <header class="modal-card-head">
-              <p class="modal-card-title">配達日を選択してください</p>
-              <button class="delete" aria-label="close" id="close"></button>
-            </header>
-            <section class="modal-card-body">
-              <?= $this->Form->create($orderList,['class'=>'box is-centered is-4']) ?>
-                <p class="modal-image image is-3by2">
-                </p>
-                <div class="item_id"></div>
-                <p class="has-text-weight-bold is-size-4">たらこスパゲッティ</p>
-                <div class="field">
-                  <label class="label">配達日</label>
-                  <div class="control">
-                    <div class="item_id"></div>
-                    <?php 
-                        $date = new DateTime();
-                        $date->modify('+1 day');
-                    ?>
-                    <?= $this->Form->date("delivery_date",['class'=>'input','required'=>true,'monthNames' => false,'minYear' => date('Y'),'value'=>$date->format('Y-m-d')]) ?>
-                    Y/M/D
-                  </div>
-                  <?php echo $this->Form->error('delivery_date') ?>
-                </div>
-                <div class="columns is-centered">
-                  <div class="colimn" >
-                    <button class="button is-success has-text-weight-bold">注文決定</button>
-                  </div>
-                </div>
-              <?= $this->Form->end() ?>
-            </section>
-            <footer class="modal-card-foot">
-            </footer>
-          </div>
-        </div>
         <div class="columns is-centered">
-            <h3 class="title .is-centered is-size-5"><?= __('商品一覧') ?></h3>
+            <h3 class="title is-centered is-size-5"><?= __('商品一覧') ?></h3>
         </div>
-        <div class="columns is-centered">
+        <div class="columns  is-centered">
             <div class="column"></div>
             <div class="column" style="display: flex;justify-content: space-around;">
                 <?php echo $this->Form->create(null, ["type" => "get","valueSources" => "query"]); ?>
@@ -132,7 +100,7 @@
                             <div class="card">
                                 <div class="card-image">
                                   <figure class="image is-4by3">
-                                    <?php echo "<img src=\"".$this->Url->build("/img/").h($Item->item_image)."\" alt=\"".h($Item->item_image)."\" class=\"image-".h($Item->item_id)."\">" ?>
+                                    <?php echo "<img src=\"".$this->Url->build("/img/").h($Item->item_image)."\" alt=\"".h($Item->item_image)."\">" ?>
                                   </figure>
                                 </div>
                                 <div class="card-content">
@@ -143,16 +111,21 @@
                                   </div>
                                   <div class="content">
                                     <?php foreach ($tags as $tag): ?>
-                                        <?= $this->Html->link(__('#'.$tag),'https://konakera.sakura.ne.jp/orderer/order?tags%5B%5D='.$tag.'&search=a',['class'=>'is-small']) ?>
+                                        <?= $this->Html->link(__('#'.$tag),'https://konakera.sakura.ne.jp/items?tags%5B%5D='.$tag.'&search=a',['class'=>'is-small']) ?>
                                     <?php endforeach; ?>                                       
                                   </div>
                                 </div>
                                 <footer class="card-footer">
                                     <p class="card-footer-item">
                                         <span>
-                                            <?php echo "<button class=\"button is-success has-text-weight-bold\" onclick=\"itemAdd(".$Item->item_id.")\">注文</button>" ?>
+                                        <?= $this->Html->link(__('商品変更'), 'https://konakera.sakura.ne.jp/items/edit/'.$Item->item_id,['class'=>'button is-warning has-text-weight-bold']) ?>
                                         </span>
-                                    </p>   
+                                    </p>
+                                    <p class="card-footer-item">
+                                        <span>
+                                            <?= $this->Html->link(__('商品削除'),'https://konakera.sakura.ne.jp/items/delete?id='.$Item->item_id, ['class'=>'button is-danger has-text-weight-bold','confirm' => __(' ID：{0} の商品を削除します。よろしいですか?', $Item->item_id)]) ?>
+                                        </span>
+                                    </p>           
                                 </footer>
                             </div>
                         </div>
@@ -167,5 +140,3 @@
         <?php endif; ?>
     </div>
 </section>
-<?= $this->Html->script('model') ?>
-

@@ -20,7 +20,7 @@ class OrdererController extends AppController
 {
     // ページネイションの設定
     public $paginate = [
-        'limit' => 3 // 1ページに表示するデータ件数
+        'limit' => 6 // 1ページに表示するデータ件数
     ];
 
     /**
@@ -38,14 +38,19 @@ class OrdererController extends AppController
 
         // ログインしているユーザが注文中(未配達)の注文一覧を取得
         // ・注文した順番で降順
-        $orderList = $this->paginate($this->OrderList->find('all')->select([ 
-            'order_id'=>'OrderList.id',
-            'deliverer_id'=>'OrderList.deliverer_id',
-            'orderer_id'=>'OrderList.orderer_id',
-            'item_name'=>'OrderList.item_name',
-            'delivery_date'=>'OrderList.delivery_date',
-            'created' => 'OrderList.created'
-         ])->where(['orderer_id' => $this->Auth->user('id'),'status' => 'ordered'])->order(['order_id' => 'DESC']));
+        $orderList = $this->paginate(
+            $this->OrderList->find(
+                'all'
+            )->contain([
+                'Items'
+            ])->select([ 
+                'order_id'=>'OrderList.id',
+                'deliverer_id'=>'OrderList.deliverer_id',
+                'orderer_id'=>'OrderList.orderer_id',
+                'item_name'=>'Items.name',
+                'delivery_date'=>'OrderList.delivery_date',
+                'created' => 'OrderList.created'
+            ])->where(['orderer_id' => $this->Auth->user('id'),'status' => 'ordered'])->order(['order_id' => 'DESC']));
 
         // テンプレートへのデータをセット
         $this->set(compact('orderer','orderList'));
@@ -66,14 +71,19 @@ class OrdererController extends AppController
 
         // ログインしているユーザが注文したの注文一覧を取得
         // ・注文した順番で降順
-        $orderList = $this->paginate($this->OrderList->find('all')->select([ 
-            'order_id'=>'OrderList.id',
-            'deliverer_id'=>'OrderList.deliverer_id',
-            'orderer_id'=>'OrderList.orderer_id',
-            'item_name'=>'OrderList.item_name',
-            'delivery_date'=>'OrderList.delivery_date',
-            'status' => 'OrderList.status',
-            'created' => 'OrderList.created'
+        $orderList = $this->paginate(
+            $this->OrderList->find(
+                'all'
+            )->contain([
+                'Items'
+            ])->select([ 
+                'order_id'=>'OrderList.id',
+                'deliverer_id'=>'OrderList.deliverer_id',
+                'orderer_id'=>'OrderList.orderer_id',
+                'item_name'=>'Items.name',
+                'delivery_date'=>'OrderList.delivery_date',
+                'status' => 'OrderList.status',
+                'created' => 'OrderList.created'
          ])->where(['orderer_id' => $this->Auth->user('id')])->order(['order_id' => 'DESC']));
 
         // テンプレートへのデータをセット
@@ -239,7 +249,7 @@ class OrdererController extends AppController
     public function order()
     {
         // 外部モデル呼び出し
-        $this->loadModels(['Orderer','Deliverer','OrderList','Users']);
+        $this->loadModels(['Orderer','Deliverer','OrderList','Users','Items','Tags','ItemsToTags']);
 
         // 新規注文情報の生成
         $orderList = $this->OrderList->newEntity();
@@ -247,6 +257,9 @@ class OrdererController extends AppController
         // リクエストが「post」であったか確認
         if ($this->request->is('post')) {
             // リクエストが「post」であった場合
+
+            // 新規注文情報の生成
+            $orderList = $this->OrderList->newEntity();
 
             // 本日の日付を取得
             $today = date("Y-m-d");
@@ -307,6 +320,7 @@ class OrdererController extends AppController
                 // 配達者と注文完了状態を設定
                 $this->request = $this->request->withData('orderer_id', (int)$this->Auth->user('id'));
                 $this->request = $this->request->withData('deliverer_id', (int)$first_key);
+                $this->request = $this->request->withData('item_id', (int)$this->request->getData('item_id'));
                 $this->request = $this->request->withData('status', 'ordered');
                 $this->request = $this->request->withData('delivery_date',$delivery_date['year'].'/'.$delivery_date['month'].'/'.$delivery_date['day']);
 
@@ -320,6 +334,7 @@ class OrdererController extends AppController
                     // メール本文に必要な情報を取得
                     $deliverer = $this->Deliverer->get((int)$first_key);
                     $user = $this->Users->get($this->Auth->user('id'));
+                    $item = $this->Items->get((int)$this->request->getData('item_id'));
 
                     // メール設定
                     $email = new Email('Sendgrid');
@@ -334,7 +349,7 @@ class OrdererController extends AppController
 
 ご注文頂き、誠にありがとうございます。
 以下の商品の注文を承りました。
-・{$this->request->getData('item_name')}
+・{$item->name}
 
 {$deliverer->name}
 が配送を担当させていただきます。
@@ -359,8 +374,129 @@ class OrdererController extends AppController
             }
         }
 
+        // Todo:
+        // Deliverer/index.ctpの配達完了URLがレンタルサーバー版で
+        // https://konakera.sakura.ne.jp/deliverer/delivered?id=
+        // になってないので変更
+        // 
+        // http://localhost:8888/food_search/items?tags%5B%5D=&tags%5B%5D=1&keyword=test
+        // 上記からタグリンクをクリックした際の挙動を推測すること
+
+        // フリーワードとタグの取得
+        if($this->request->getQuery()==null){
+            $keyword = null;
+            $selectTags = [''];
+        }else{
+            $keyword = $this->request->getQuery('keyword');
+            if($this->request->getQuery('tags')==null){
+                $selectTags = [''];
+            }else{
+                $selectTags = $this->request->getQuery('tags');
+            }
+        }
+
+        // 商品一覧を取得
+        // ・商品一覧、タグ一覧、連関エンティティの結合表、アイテムIDでグループ化された商品一覧の自己結合
+        // ・フリーワード検索付き
+        // ・タグ検索付き
+        // ※タグ検索の有無でmatchingとgroupの内容を変更
+        //  「this is incompatible with sql_mode=only_full_group_by」が発生したため
+        //  「only_full_group_by」をoffにしてあります
+        if($selectTags[0]==''){
+            // キーワード検索のみ
+
+            $Items = $this->paginate(
+                $this->Items->find('all',[
+                    'conditions' => [
+                        'Items.name LIKE' => '%'.$keyword.'%',
+                    ],
+                    'group' => 'Items.id'
+                ])->matching(
+                    "Tags", function($q){
+                        return $q;
+                    }
+                )->select([
+                    'item_id' => 'Items.id',
+                    'item_name' => 'Items.name',
+                    'item_image' => 'Items.image', 
+                    'tag_names' => 'group_concat(Tags.name SEPARATOR ",")'
+                ])
+            );    
+        }else{
+            // タグとキーワードのよる検索
+            // タグリンクのクリック時
+
+            $subqueryA = $this->ItemsToTags->find(
+            )->contain([
+                'Tags'
+            ])->where([
+                'Tags.name IN' => $selectTags
+            ])->select([
+                'item_id_from_tag' => 'ItemsToTags.item_id',
+                'tag_id_from_tag' => 'ItemsToTags.tag_id'
+            ])->group(
+                'item_id_from_tag'
+            );
+
+            $subqueryB = $this->Items->find(
+            )->where([
+                'Items.name LIKE' => '%'.$keyword.'%'
+            ])->select([
+                'item_id_from_item' => 'Items.id'
+            ]);
+
+
+            $Items = $this->paginate(
+                $this->Items->find('all',[
+                    'group' => 'Items.id having count(Items.id) >= '.count($selectTags)
+                ])->join([
+                    'SearchTagItems' => [
+                        'table' => $subqueryA,
+                        'type' => 'inner',
+                        'conditions' => 'Items.id = SearchTagItems.item_id_from_tag'
+                    ],
+                    'SearchItems' => [
+                        'table' => $subqueryB,
+                        'type' => 'inner',
+                        'conditions' => 'SearchItems.item_id_from_item = SearchTagItems.item_id_from_tag'
+                    ]
+                ])->matching(
+                    "Tags", function($q){
+                        return $q;
+                    }
+                )->select([
+                    'item_id' => 'Items.id',
+                    'item_name' => 'Items.name',
+                    'item_image' => 'Items.image', 
+                    'tag_names' => 'group_concat(Tags.name SEPARATOR ",")'
+                ])
+            );  
+
+            // 終結前の実装だか、matchingでCakePHP特有の引数の渡し方をしているの残します。
+            // $Items = $this->paginate(
+            //     $this->Items->find('all',[
+            //         'conditions' => [
+            //             'Items.name LIKE' => '%'.$keyword.'%',
+            //         ],
+            //         'group' => 'Items.id having count(Items.id) >= '.count($tags)
+            //     ])->matching(
+            //         "Tags", function($q) use($tags){
+            //             return $q->where(['Tags.name IN' => $tags]);
+            //         }
+            //     )->select([
+            //         'item_id' => 'Items.id',
+            //         'item_name' => 'Items.name',
+            //         'item_image' => 'Items.image', 
+            //         'tag_names' => 'group_concat(Tags.name SEPARATOR ",")'
+            //     ])
+            // );    
+        }
+
+        // タグ一覧の取得
+        $Tags = $this->Tags->find('all');
+
         // テンプレートへのデータをセット
-        $this->set(compact('orderList'));
+        $this->set(compact('Items','Tags','selectTags','orderList'));
     }    
 
     // ログアウト

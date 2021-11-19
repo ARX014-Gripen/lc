@@ -64,7 +64,7 @@
 </p>
 <section class="section">
     <div class="columns is-centered">
-        <h3 class="title has-text-centered is-size-5"><?= __('注文一覧') ?></h3>
+        <h3 class="title has-text-centered is-size-5"><?= __('配達予定の注文一覧') ?></h3>
     </div>
     <div class="order_list">
         <?php foreach ($orderList as $order): ?>

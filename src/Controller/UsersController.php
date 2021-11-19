@@ -84,22 +84,34 @@ class UsersController extends AppController
         if ($this->request->is('post')) {
             // リクエストが「post」であった場合
 
-            // 設定した情報を保存可能な情報に整形
-            $User = $this->Users->patchEntity($User, $this->request->getData());
+            $existing = $this->Users->find(
+                'all'
+            )->where([
+                'Users.email' => $this->request->getData('email')
+            ])->toList();
 
-            // ユーザー情報の保存
-            if ($this->Users->save($User)) {
-                // 保存処理に成功した場合
+            if($existing==null){
+                // 設定した情報を保存可能な情報に整形
+                $User = $this->Users->patchEntity($User, $this->request->getData());
 
-                // 保存処理に成功したことを通知
-                $this->Flash->success(__('ユーザーの登録が完了しました。'));
+                // ユーザー情報の保存
+                if ($this->Users->save($User)) {
+                    // 保存処理に成功した場合
 
-                // ユーザ一覧へリダイレクト
-                return $this->redirect(['action' => 'index']);
+                    // 保存処理に成功したことを通知
+                    $this->Flash->success(__('ユーザーの登録が完了しました。'));
+
+                    // ユーザ一覧へリダイレクト
+                    return $this->redirect(['action' => 'index']);
+                }
+
+                // 処理が失敗したことを通知
+                $this->Flash->error(__('ユーザーの登録に失敗しました。'));
+            }else{
+                $this->Flash->error(__('そのメールアドレスは既に登録されいます。'));
             }
 
-            // 処理が失敗したことを通知
-            $this->Flash->error(__('ユーザーの登録に失敗しました。'));
+
         }
 
         // テンプレートへのデータをセット
@@ -124,22 +136,34 @@ class UsersController extends AppController
         if ($this->request->is(['patch', 'post', 'put'])) {
             // リクエストが「edit」であった場合
 
-            // 設定した情報を保存可能な情報に整形
-            $User = $this->Users->patchEntity($User, $this->request->getData());
+            $existing = $this->Users->find(
+                'all'
+            )->where([
+                'Users.email' => $this->request->getData('email')
+            ])->where([
+                'Users.id IS NOT' => $id
+            ])->toList();
 
-            // ユーザー情報の保存
-            if ($this->Users->save($User)) {
-                // 保存処理に成功した場合
+            if($existing==null){
+                // 設定した情報を保存可能な情報に整形
+                $User = $this->Users->patchEntity($User, $this->request->getData());
 
-                // 保存処理に成功したことを通知
-                $this->Flash->success(__('ID'.$id.'のユーザー情報変更が完了しました。'));
-
-                // ユーザ一覧へリダイレクト
-                return $this->redirect(['action' => 'index']);
+                // ユーザー情報の保存
+                if ($this->Users->save($User)) {
+                    // 保存処理に成功した場合
+                
+                    // 保存処理に成功したことを通知
+                    $this->Flash->success(__('ID'.$id.'のユーザー情報変更が完了しました。'));
+                
+                    // ユーザ一覧へリダイレクト
+                    return $this->redirect(['action' => 'index']);
+                }
+            
+                // 処理が失敗したことを通知
+                $this->Flash->error(__('ID'.$id.'のユーザー情報変更に失敗しました。'));
+            }else{
+                $this->Flash->error(__('そのメールアドレスは既に登録されいます。'));
             }
-
-            // 処理が失敗したことを通知
-            $this->Flash->error(__('ID'.$id.'のユーザー情報変更に失敗しました。'));
         }
 
         // テンプレートへのデータをセット

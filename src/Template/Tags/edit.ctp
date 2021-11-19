@@ -1,10 +1,10 @@
 <?php
 /**
  * @var \App\View\AppView $this
- * @var \App\Model\Entity\User $User
+ * @var \App\Model\Entity\Orderer $orderer
  */
 ?>
-<?php $this->assign('title', 'ユーザー情報'); ?>
+<?php $this->assign('title', '注文'); ?>
 <?= $this->Html->script('burger') ?>
 <section class="hero is-small" style="background-color:orange">
     <div class="hero-body">
@@ -22,19 +22,8 @@
             <div class="navbar-end">
                 <span class="navbar-item">
                     <?= $this->Html->link(
-                        "ユーザー新規作成",['action' => 'add'],['class' => 'button is-success has-text-weight-bold']
+                        "タグ新規作成",['action' => 'add'],['class' => 'button is-success has-text-weight-bold']
                     ) ?>                 
-                </span>
-                <span class="navbar-item">
-                <?= $this->Html->link("ユーザー情報変更", ['action' => 'edit', $User->id],['class'=>'button is-warning has-text-weight-bold']) ?>               
-                </span>
-                <span class="navbar-item">
-                    <?= $this->Form->postLink(
-                        'ユーザー削除',
-                        ['action' => 'delete', $User->id],
-                        ['class' => 'button is-danger has-text-weight-bold','confirm' => __('表示中のユーザーを削除を削除しますか?')]
-                        )
-                    ?>
                 </span>
                 <span class="navbar-item">
                     <?= $this->Html->link("注文一覧", ['controller' => 'Admin','action' => 'index'],['class'=>'button is-success has-text-weight-bold']) ?>               
@@ -49,7 +38,7 @@
                     <?= $this->Html->link("タグ一覧", ['controller' => 'Tags','action' => 'index'],['class'=>'button is-info has-text-weight-bold']) ?>               
                 </span>
                 <span class="navbar-item">
-                    <?= $this->Html->link("ユーザー一覧", ['action' => 'index'],['class'=>'button is-info has-text-weight-bold']) ?>               
+                    <?= $this->Html->link("ユーザー一覧", ['controller' => 'Users','action' => 'index'],['class'=>'button is-info has-text-weight-bold']) ?>               
                 </span>
                 <span class="navbar-item">
                     <?= $this->Html->link(
@@ -62,28 +51,26 @@
 </section>
 <?= $this->Flash->render() ?>
 <section class="section">
-    <div class="columns is-centered">
-        <table class="table is-centered" style="display: block;overflow-x: scroll;white-space: nowrap;-webkit-overflow-scrolling: touch;">
-            <tr>
-                <th scope="row"><?= __('ID') ?></th>
-                <td><?= $this->Number->format($User->id) ?></td>
-            </tr>
-            <tr>
-                <th scope="row"><?= __('メールアドレス') ?></th>
-                <td><?= h($User->email) ?></td>
-            </tr>
-            <tr>
-                <th scope="row"><?= __('役割') ?></th>
-                <td><?= h($User->role) ?></td>
-            </tr>
-            <tr>
-                <th scope="row"><?= __('登録日時') ?></th>
-                <td><?= h($User->created) ?></td>
-            </tr>
-            <tr>
-                <th scope="row"><?= __('更新日時') ?></th>
-                <td><?= h($User->modified) ?></td>
-            </tr>
-        </table>
+  <div class="columns is-centered">
+    <div class="column is-half-desktop">
+      <?= $this->Form->create($tag,['class'=>'box is-centered is-4']) ?>
+        <div class="field">
+          <label class="label is-size-5">タグ名変更</label>
+        </div>
+        <div class="field">
+          <label class="label">タグ名</label>
+          <div class="control">
+            <?= $this->Form->text("name",['placeholder'=>'タグ名を入力してください','class'=>'input','required'=>true]) ?>
+          </div>
+          <?php echo $this->Form->error('name') ?>
+        </div>
+        <div class="has-text-centered">
+          <div class="field">
+            <?= $this->Form->button('変更',['class'=>'button is-success']); ?>
+          </div>
+        </div>
+      <?= $this->Form->end() ?>
     </div>
+  </div>
 </section>
+

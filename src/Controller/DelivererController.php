@@ -17,7 +17,7 @@ class DelivererController extends AppController
 {
     // ページネイションの設定
     public $paginate = [
-        'limit' => 3 // 1ページに表示するデータ件数
+        'limit' => 6 // 1ページに表示するデータ件数
     ];
 
     /**
@@ -38,6 +38,7 @@ class DelivererController extends AppController
         // ・注文日＞注文者IDの優先度で昇順
         $orderList = $this->paginate($this->OrderList->find('all'
         )->contain([
+            'Items',
             'Orderer',
             'GroupByOrderList'=>function($q){
                 return $q->find('all')->select([
@@ -50,7 +51,7 @@ class DelivererController extends AppController
             'deliverer_id'=>'OrderList.deliverer_id',
             'orderer_id'=>'OrderList.orderer_id',
             'orderer_name'=>'Orderer.name',
-            'item_name'=>'OrderList.item_name',
+            'item_name'=>'Items.name',
             'address'=>'Orderer.address',
             'delivery_date'=>'OrderList.delivery_date',
          ])->where(['OrderList.deliverer_id' => $this->Auth->user('id'),'OrderList.status' => 'ordered']

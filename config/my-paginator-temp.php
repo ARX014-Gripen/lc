@@ -1,13 +1,13 @@
 <?php
 return [
-    'nextActive' => '<a class="pagination-next has-text-weight-bold" href="{{url}}">{{text}}</a>',
+    'nextActive' => '<a class="pagination-next has-text-weight-bold" style="background-color:rgb(255,255,255);" href="{{url}}">{{text}}</a>',
     'nextDisabled' => '',
-    'prevActive' => '<a class="pagination-previous has-text-weight-bold" href="{{url}}">{{text}}</a>',
+    'prevActive' => '<a class="pagination-previous has-text-weight-bold" style="background-color:rgb(255,255,255);" href="{{url}}">{{text}}</a>',
     'prevDisabled' => '',
-    'first' => '<a class="pagination-previous has-text-weight-bold" href="{{url}}">{{text}}</a>',
-    'last' => '<a class="pagination-previous has-text-weight-bold" href="{{url}}">{{text}}</a>',
-    'number' => '<a class="pagination-link has-text-weight-bold" href="{{url}}">{{text}}</a>',
-    'current' => '<a class="pagination-link is-current has-text-weight-bold" href="{{url}}">{{text}}</a>',
+    'first' => '<a class="pagination-previous has-text-weight-bold" style="background-color:rgb(255,255,255);" href="{{url}}">{{text}}</a>',
+    'last' => '<a class="pagination-previous has-text-weight-bold" style="background-color:rgb(255,255,255);" href="{{url}}">{{text}}</a>',
+    'number' => '<a class="pagination-link has-text-weight-bold" style="background-color:rgb(255,255,255);" href="{{url}}">{{text}}</a>',
+    'current' => '<a class="pagination-link is-current has-text-weight-bold" style="background-color:rgb(255,255,255);" href="{{url}}">{{text}}</a>',
 ];
 ?>
 

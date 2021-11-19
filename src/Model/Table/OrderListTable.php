@@ -49,6 +49,10 @@ class OrderListTable extends Table
             'foreignKey' => 'orderer_id',
         ]);
 
+        $this->belongsTo('Items', [
+            'foreignKey' => 'item_id',
+        ]);
+
         $this->hasOne('GroupByOrderList', [
             'className' => 'OrderList',
             'foreignKey' => 'id',
@@ -68,12 +72,6 @@ class OrderListTable extends Table
         $validator
             ->integer('id')
             ->allowEmptyString('id', null, 'create');
-
-        $validator
-            ->scalar('item_name')
-            ->maxLength('item_name', 255, '255文字以内にしてください。')
-            ->requirePresence('item_name', 'create')
-            ->notEmptyString('item_name');
 
         $validator
             ->date('delivery_date', ['ymd', 'mdy'])

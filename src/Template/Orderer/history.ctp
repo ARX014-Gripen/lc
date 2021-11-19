@@ -36,7 +36,7 @@
                 </span>
                 <span class="navbar-item">
                     <?= $this->Html->link(
-                        "注文一覧",['action' => 'index'],['class' => 'button is-info has-text-weight-bold']
+                        "配達予定",['action' => 'index'],['class' => 'button is-info has-text-weight-bold']
                     ) ?> 
                 </span> 
                 <span class="navbar-item">

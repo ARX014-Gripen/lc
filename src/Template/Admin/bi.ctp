@@ -29,6 +29,12 @@
                     <?= $this->Html->link("注文一覧", ['action' => 'index'],['class'=>'button is-success has-text-weight-bold']) ?>               
                 </span>
                 <span class="navbar-item">
+                    <?= $this->Html->link("商品一覧", ['controller' => 'Items','action' => 'index'],['class'=>'button is-info has-text-weight-bold']) ?>               
+                </span>
+                <span class="navbar-item">
+                    <?= $this->Html->link("タグ一覧", ['controller' => 'Tags','action' => 'index'],['class'=>'button is-info has-text-weight-bold']) ?>               
+                </span>
+                <span class="navbar-item">
                     <?= $this->Html->link("ユーザー一覧", ['controller' => 'Users','action' => 'index'],['class'=>'button is-info has-text-weight-bold']) ?>               
                 </span>
                 <span class="navbar-item">
@@ -48,7 +54,7 @@
             <canvas id="myChart1" style="position: relative; height:100; width:150"></canvas>
         </div>
         <div class="column">
-            <h2 class="subtitle is-size-6-mobile is-size-4-tablet">注文数ランキング</h2>
+            <h2 class="subtitle is-size-6-mobile is-size-4-tablet">配達数ランキング</h2>
             <?php
                 $rank = 1;
                 $cnt = 1;

@@ -22,7 +22,7 @@
             <div class="navbar-end">
                 <span class="navbar-item">
                     <?= $this->Html->link(
-                        "ユーザー新規作成",['action' => 'add'],['class' => 'button is-success has-text-weight-bold']
+                        "タグ新規作成",['action' => 'add'],['class' => 'button is-success has-text-weight-bold']
                     ) ?>                 
                 </span>
                 <span class="navbar-item">
@@ -35,7 +35,7 @@
                     <?= $this->Html->link("商品一覧", ['controller' => 'Items','action' => 'index'],['class'=>'button is-info has-text-weight-bold']) ?>               
                 </span>
                 <span class="navbar-item">
-                    <?= $this->Html->link("タグ一覧", ['controller' => 'Tags','action' => 'index'],['class'=>'button is-info has-text-weight-bold']) ?>               
+                    <?= $this->Html->link("ユーザー一覧", ['controller' => 'Users','action' => 'index'],['class'=>'button is-info has-text-weight-bold']) ?>               
                 </span>
                 <span class="navbar-item">
                     <?= $this->Html->link(
@@ -57,7 +57,7 @@
             <?php echo $this->Form->create(null, ["type" => "get","valueSources" => "query"]); ?>
                 <div class="field has-addons">
                     <div class="control"style="width:270px;">
-                        <?= $this->Form->text("keyword",['placeholder'=>'検索するキーワードを入力してください。','class'=>'input is-small']); ?>
+                        <?= $this->Form->text("keyword",['placeholder'=>'検索するタグ名を入力してください。','class'=>'input is-small']); ?>
                     </div>
                     <div class="control">
                         <?= $this->Form->button(__("検索"), ["type" => "submit",'class'=>'button is-small is-success has-text-weight-bold']); ?>
@@ -73,25 +73,18 @@
                 <thead>
                     <tr>
                         <th scope="col"><?= $this->Paginator->sort('id','ID') ?></th>
-                        <th scope="col"><?= $this->Paginator->sort('email','メールアドレス') ?></th>
-                        <th scope="col"><?= $this->Paginator->sort('role','役割') ?></th>
-                        <th scope="col"><?= $this->Paginator->sort('created','登録日時') ?></th>
-                        <th scope="col"><?= $this->Paginator->sort('modified','更新日時') ?></th>
+                        <th scope="col"><?= $this->Paginator->sort('name','タグ名') ?></th>
                         <th scope="col" class="actions"><?= __('操作') ?></th>
                     </tr>
                 </thead>
                 <tbody>
-                    <?php foreach ($Users as $User): ?>
+                    <?php foreach ($tags as $tag): ?>
                     <tr>
-                        <td><?= $this->Number->format($User->id) ?></td>
-                        <td><?= mb_strimwidth( h($User->email), 0, 30, '…', 'UTF-8' ); ?></td>
-                        <td><?= h($User->role) ?></td>
-                        <td><?= h($User->created) ?></td>
-                        <td><?= h($User->modified) ?></td>
+                        <td><?= $this->Number->format($tag->id) ?></td>
+                        <td><?= h($tag->name) ?></td>
                         <td class="actions">
-                            <?= $this->Html->link(__('表示'), ['action' => 'view', $User->id],['class'=>'button is-small is-info has-text-weight-bold']) ?>
-                            <?= $this->Html->link(__('変更'), ['action' => 'edit', $User->id],['class'=>'button is-small is-warning has-text-weight-bold']) ?>
-                            <?= $this->Form->postLink(__('削除'), ['action' => 'delete', $User->id], ['class'=>'button is-small is-danger has-text-weight-bold','confirm' => __(' ID：{0} のユーザーを削除してもよろしいですか?', $User->id)]) ?>
+                            <?= $this->Html->link(__('変更'), ['action' => 'edit', $tag->id],['class'=>'button is-small is-warning has-text-weight-bold']) ?>
+                            <?= $this->Form->postLink(__('削除'), ['action' => 'delete', $tag->id], ['class'=>'button is-small is-danger has-text-weight-bold','confirm' => __(' ID：{0} のタグを削除してもよろしいですか?', $tag->id)]) ?>
                         </td>
                     </tr>
                     <?php endforeach; ?>

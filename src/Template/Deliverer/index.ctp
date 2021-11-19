@@ -82,7 +82,7 @@
                                 </p>
                                 <p class="card-footer-item">
                                     <span>
-                                        <?= $this->Html->link(__('配送完了'),'https://greatspirit.sakura.ne.jp/NA/k_nakamura/lc/deliverer/delivered?id='.$order->order_id, ['class'=>'button is-danger has-text-weight-bold','confirm' => __(' ID：{0} の配達を完了します。よろしいですか?', $order->order_id)]) ?>
+                                        <?= $this->Html->link(__('配送完了'),'https://konakera.sakura.ne.jp/deliverer/delivered?id='.$order->order_id, ['class'=>'button is-danger has-text-weight-bold','confirm' => __(' ID：{0} の配達を完了します。よろしいですか?', $order->order_id)]) ?>
                                     </span>
                                 </p>           
                             </footer>
