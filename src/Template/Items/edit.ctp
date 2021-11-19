@@ -55,7 +55,7 @@
         <div class="column is-half-desktop">
           <?= $this->Form->create($Item,['class'=>'box is-centered is-4','enctype' => 'multipart/form-data']) ?>
             <div class="field">
-              <label class="label is-size-5">商品登録</label>
+              <label class="label is-size-5">商品変更</label>
             </div>
             <div class="field">
               <label class="label">商品名</label>

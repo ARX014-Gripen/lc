@@ -116,7 +116,7 @@
                                   </div>
                                   <div class="content">
                                     <?php foreach ($tags as $tag): ?>
-                                        <?= $this->Html->link(__('#'.$tag),'https://konakera.sakura.ne.jp/items?tags%5B%5D='.$tag.'&search=a',['class'=>'is-small']) ?>
+                                        <?= $this->Html->link(__('#'.$tag),'https://konakera.sakura.ne.jp/items?tags%5B%5D='.$tag,['class'=>'is-small']) ?>
                                     <?php endforeach; ?>                                       
                                   </div>
                                 </div>
