@@ -96,6 +96,7 @@
     <h1 class="title is-size-5-mobile is-size-3-tablet">使用したフレームワーク/API</h1>
     <h2 class="subtitle is-size-6-mobile is-size-4-tablet">
         <ul class="subpage-list">
+            <li>CakePHP3</li>
             <li>BULMA</li>
             <li>Geocoding</li>
             <li>GoogleMapURL</li>
