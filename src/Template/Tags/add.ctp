@@ -5,7 +5,14 @@
  */
 ?>
 <?php $this->assign('title', '注文'); ?>
+<?php 
+   // ワンタイムチケットを生成する。
+    $ticket = md5(uniqid(rand(), true));
+    $session = $this->getRequest()->getSession();
+    $session->write('ticket',$ticket);
+?>
 <?= $this->Html->script('burger') ?>
+<?= $this->Html->script('nomal_submit') ?>
 <section class="hero is-small" style="background-color:orange">
     <div class="hero-body">
         <div class="navbar-brand">
@@ -61,9 +68,10 @@
         </div>
         <div class="has-text-centered">
           <div class="field">
-            <?= $this->Form->button('登録',['class'=>'button is-success']); ?>
+            <?= $this->Form->button('登録',['class'=>'button is-success submit-button']); ?>
           </div>
         </div>
+        <input type="hidden" name="ticket" value="<?=$ticket?>">
       <?= $this->Form->end() ?>
     </div>
   </div>

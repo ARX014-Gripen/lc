@@ -5,6 +5,12 @@
  */
 ?>
 <?php $this->assign('title', '配達者選択'); ?>
+<?php 
+   // ワンタイムチケットを生成する。
+    $ticket = md5(uniqid(rand(), true));
+    $session = $this->getRequest()->getSession();
+    $session->write('ticket',$ticket);
+?>
 <?= $this->Html->script('burger') ?>
 <section class="hero is-small" style="background-color:orange">
     <div class="hero-body">
@@ -20,9 +26,6 @@
         </div>
         <div id="navbarMenuHeroC" class="navbar-menu" style="background-color:orange">
             <div class="navbar-end">
-                <span class="navbar-item">
-                    <?= $this->Html->link("配達者変更", ['action' => 'edit', $fullOrder->id],['class'=>'button is-warning has-text-weight-bold']) ?>               
-                </span>
                 <span class="navbar-item">
                     <?= $this->Form->postLink(
                         '注文削除',
@@ -94,7 +97,7 @@
                         <td class="has-text-left"><?= mb_strimwidth( h($Deliverer->name), 0, 10, '…', 'UTF-8' ); ?></td>
                         <td class="has-text-left"><?= mb_strimwidth( h($Deliverer->address), 0, 30, '…', 'UTF-8' ); ?></td>
                         <td class="actions">
-                            <?= $this->Form->postLink(__('配達者決定'), ['action' => 'edit',$id], ['method'=>'put','data'=>['delivererId'=>$Deliverer->id],'class'=>'button is-small is-success has-text-weight-bold']) ?>
+                            <?= $this->Form->postLink(__('配達者決定'), ['action' => 'edit',$id], ['method'=>'put','data'=>['delivererId'=>$Deliverer->id,'ticket'=>$ticket],'class'=>'button is-small is-success has-text-weight-bold','confirm' => __(' ID：{0} の配達者に変更してもよろしいですか?', $Deliverer->id)]) ?>
                         </td>
                     </tr>
                     <?php endforeach; ?>

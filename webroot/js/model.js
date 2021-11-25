@@ -1,7 +1,10 @@
 $(document).ready(function() {
   $("#close, div.modal-background").on("click", function() {
     $("div.modal").removeClass("is-active");
-  })
+  });
+  $('form').submit(function() {
+    $(".submit-button").prop("disabled", true);
+  });
 });
 
 function itemAdd(id){
@@ -11,5 +14,6 @@ function itemAdd(id){
   $("p.modal-image").empty();
   image = $("img.image-"+id).clone(true);
   $("p.modal-image").append(image);
+  $(".submit-button").prop("disabled", false);
   $("div.modal").addClass("is-active");
 }
