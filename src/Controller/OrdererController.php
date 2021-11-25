@@ -69,6 +69,12 @@ class OrdererController extends AppController
      */
     public function history()
     {
+        // セッションオブジェクトの取得
+        $session = $this->getRequest()->getSession();
+
+        // セッション変数を解放し、ブラウザの戻るボタンで戻った場合に備える
+        $session->delete('ticket');
+
         // 外部モデル呼び出し
         $this->loadModels(['Orderer','OrderList']);
 
@@ -104,50 +110,50 @@ class OrdererController extends AppController
     public function add()
     {
 
-        // ポストされたワンタイムチケットを取得する。
-        $ticket = $this->request->getData('ticket');
-
-        // セッションオブジェクトの取得
-        $session = $this->getRequest()->getSession();
-
-        // セッション変数に保存されたワンタイムチケットを取得する。
-        $save = $session->read('ticket');
-
-        // セッション変数を解放し、ブラウザの戻るボタンで戻った場合に備える
-        $session->delete('ticket');
-
-        // ポストされたワンタイムチケットの中身が空だった、
-        // または、ポストすらされてこなかった場合、
-        // 不正なアクセスとみなして強制終了する。
-        if ($ticket === '') {
-
-            // 不正なアクセスであることを通知
-            $this->Flash->error(__('不正なアクセスです。'));
-            
-            // 注文一覧にリダイレクト
-            return $this->redirect(['action' => 'index']);
-            
-        }
-
-        // ブラウザの戻るボタンで戻った場合は、セッション変数が存在しないため、
-        // 2重送信とみなすことができる。
-        // また、不正なアクセスの場合もワンタイムチケットが同じになる確率は低いため、
-        // 不正アクセス防止にもなる。
-        if($ticket != $save){
-
-            // 不正なアクセスであることを通知
-            $this->Flash->error(__('二重送信のため処理は実行されませんでした。'));
-            
-            // 注文一覧にリダイレクト
-            return $this->redirect(['action' => 'index']);
-        }
-
         // 新規注文者情報の生成
         $orderer = $this->Orderer->newEntity();
         
         // リクエストが「post」であったか確認
         if ($this->request->is('post')) {
             // リクエストが「post」であった場合
+
+            // ポストされたワンタイムチケットを取得する。
+            $ticket = $this->request->getData('ticket');
+
+            // セッションオブジェクトの取得
+            $session = $this->getRequest()->getSession();
+
+            // セッション変数に保存されたワンタイムチケットを取得する。
+            $save = $session->read('ticket');
+
+            // セッション変数を解放し、ブラウザの戻るボタンで戻った場合に備える
+            $session->delete('ticket');
+
+            // ポストされたワンタイムチケットの中身が空だった、
+            // または、ポストすらされてこなかった場合、
+            // 不正なアクセスとみなして強制終了する。
+            if ($ticket === '') {
+
+                // 不正なアクセスであることを通知
+                $this->Flash->error(__('不正なアクセスです。'));
+
+                // 注文一覧にリダイレクト
+                return $this->redirect(['action' => 'index']);
+
+            }
+
+            // ブラウザの戻るボタンで戻った場合は、セッション変数が存在しないため、
+            // 2重送信とみなすことができる。
+            // また、不正なアクセスの場合もワンタイムチケットが同じになる確率は低いため、
+            // 不正アクセス防止にもなる。
+            if($ticket != $save){
+            
+                // 不正なアクセスであることを通知
+                $this->Flash->error(__('二重送信のため処理は実行されませんでした。'));
+                
+                // 注文一覧にリダイレクト
+                return $this->redirect(['action' => 'index']);
+            }
 
             // 使用するAPIの仕様で、ごく稀に「緯度0,軽度0」が返ってくることがあるため
             // その場合は正確な座標が返ってくるまで再取得を実施する
@@ -219,44 +225,6 @@ class OrdererController extends AppController
     public function edit($id = null)
     {
 
-        // ポストされたワンタイムチケットを取得する。
-        $ticket = $this->request->getData('ticket');
-
-        // セッションオブジェクトの取得
-        $session = $this->getRequest()->getSession();
-
-        // セッション変数に保存されたワンタイムチケットを取得する。
-        $save = $session->read('ticket');
-
-        // セッション変数を解放し、ブラウザの戻るボタンで戻った場合に備える
-        $session->delete('ticket');
-
-        // ポストされたワンタイムチケットの中身が空だった、
-        // または、ポストすらされてこなかった場合、
-        // 不正なアクセスとみなして強制終了する。
-        if ($ticket === '') {
-
-            // 不正なアクセスであることを通知
-            $this->Flash->error(__('不正なアクセスです。'));
-            
-            // 注文一覧にリダイレクト
-            return $this->redirect(['action' => 'index']);
-            
-        }
-
-        // ブラウザの戻るボタンで戻った場合は、セッション変数が存在しないため、
-        // 2重送信とみなすことができる。
-        // また、不正なアクセスの場合もワンタイムチケットが同じになる確率は低いため、
-        // 不正アクセス防止にもなる。
-        if($ticket != $save){
-
-            // 不正なアクセスであることを通知
-            $this->Flash->error(__('二重送信のため処理は実行されませんでした。'));
-            
-            // 注文一覧にリダイレクト
-            return $this->redirect(['action' => 'index']);
-        }
-
         // 注文者情報の取得
         $orderer = $this->Orderer->get($id, [
             'contain' => [],
@@ -265,6 +233,44 @@ class OrdererController extends AppController
         // リクエストが「edit」であったか確認
         if ($this->request->is(['patch', 'post', 'put'])) {
             // リクエストが「edit」であった場合
+
+            // ポストされたワンタイムチケットを取得する。
+            $ticket = $this->request->getData('ticket');
+
+            // セッションオブジェクトの取得
+            $session = $this->getRequest()->getSession();
+
+            // セッション変数に保存されたワンタイムチケットを取得する。
+            $save = $session->read('ticket');
+
+            // セッション変数を解放し、ブラウザの戻るボタンで戻った場合に備える
+            $session->delete('ticket');
+
+            // ポストされたワンタイムチケットの中身が空だった、
+            // または、ポストすらされてこなかった場合、
+            // 不正なアクセスとみなして強制終了する。
+            if ($ticket === '') {
+
+                // 不正なアクセスであることを通知
+                $this->Flash->error(__('不正なアクセスです。'));
+
+                // 注文一覧にリダイレクト
+                return $this->redirect(['action' => 'index']);
+
+            }
+
+            // ブラウザの戻るボタンで戻った場合は、セッション変数が存在しないため、
+            // 2重送信とみなすことができる。
+            // また、不正なアクセスの場合もワンタイムチケットが同じになる確率は低いため、
+            // 不正アクセス防止にもなる。
+            if($ticket != $save){
+
+                // 不正なアクセスであることを通知
+                $this->Flash->error(__('二重送信のため処理は実行されませんでした。'));
+
+                // 注文一覧にリダイレクト
+                return $this->redirect(['action' => 'index']);
+            }            
 
             // 使用するAPIの仕様で、ごく稀に「緯度0,軽度0」が返ってくることがあるため
             // その場合は正確な座標が返ってくるまで再取得を実施する
@@ -331,55 +337,51 @@ class OrdererController extends AppController
      * @return \Cake\Http\Response|null Redirects on successful order, renders view otherwise.
      */
     public function order()
-    {
-
-        // ポストされたワンタイムチケットを取得する。
-        $ticket = $this->request->getData('ticket');
-
-        // セッションオブジェクトの取得
-        $session = $this->getRequest()->getSession();
-
-        // セッション変数に保存されたワンタイムチケットを取得する。
-        $save = $session->read('ticket');
-
-        // セッション変数を解放し、ブラウザの戻るボタンで戻った場合に備える
-        $session->delete('ticket');
-
-        // ポストされたワンタイムチケットの中身が空だった、
-        // または、ポストすらされてこなかった場合、
-        // 不正なアクセスとみなして強制終了する。
-        if ($ticket === '') {
-
-            // 不正なアクセスであることを通知
-            $this->Flash->error(__('不正なアクセスです。'));
-            
-            // 注文一覧にリダイレクト
-            return $this->redirect(['action' => 'index']);
-            
-        }
-
-        // ブラウザの戻るボタンで戻った場合は、セッション変数が存在しないため、
-        // 2重送信とみなすことができる。
-        // また、不正なアクセスの場合もワンタイムチケットが同じになる確率は低いため、
-        // 不正アクセス防止にもなる。
-        if($ticket != $save){
-
-            // 不正なアクセスであることを通知
-            $this->Flash->error(__('二重送信のため処理は実行されませんでした。'));
-            
-            // 注文一覧にリダイレクト
-            return $this->redirect(['action' => 'index']);
-        }
-        
+    {        
         // 外部モデル呼び出し
         $this->loadModels(['Orderer','Deliverer','OrderList','Users','Items','Tags','ItemsToTags']);
 
         // 新規注文情報の生成
         $orderList = $this->OrderList->newEntity();
 
-        // リクエストが「post」であったか確認
-        if ($this->request->is('post')) {
-            // リクエストが「post」であった場合
+            // リクエストが「post」であったか確認
+            if ($this->request->is('post')) {
+            
+            // リクエストが「post」であった場合 
+            // ポストされたワンタイムチケットを取得する。
+            $ticket = $this->request->getData('ticket');    
+            
+            // セッションオブジェクトの取得
+            $session = $this->getRequest()->getSession();   
+            
+            // セッション変数に保存されたワンタイムチケットを取得する。
+            $save = $session->read('ticket');   
+            
+            // セッション変数を解放し、ブラウザの戻るボタンで戻った場合に備える
+            $session->delete('ticket'); 
+            
+            // ポストされたワンタイムチケットの中身が空だった、
+            // または、ポストすらされてこなかった場合、
+            // 不正なアクセスとみなして強制終了する。
+            if ($ticket === '') {   
+                // 不正なアクセスであることを通知
+                $this->Flash->error(__('不正なアクセスです。'));    
+                // 注文一覧にリダイレクト
+                return $this->redirect(['action' => 'index']);  
+            }
+
+            // ブラウザの戻るボタンで戻った場合は、セッション変数が存在しないため、
+            // 2重送信とみなすことができる。
+            // また、不正なアクセスの場合もワンタイムチケットが同じになる確率は低いため、
+            // 不正アクセス防止にもなる。
+            if($ticket != $save){
+
+                // 不正なアクセスであることを通知
+                $this->Flash->error(__('二重送信のため処理は実行されませんでした。'));
+
+                // 注文一覧にリダイレクト
+                return $this->redirect(['action' => 'index']);
+            }
 
             // 新規注文情報の生成
             $orderList = $this->OrderList->newEntity();
@@ -497,14 +499,6 @@ class OrdererController extends AppController
             }
         }
 
-        // Todo:
-        // Deliverer/index.ctpの配達完了URLがレンタルサーバー版で
-        // https://konakera.sakura.ne.jp/deliverer/delivered?id=
-        // になってないので変更
-        // 
-        // http://localhost:8888/food_search/items?tags%5B%5D=&tags%5B%5D=1&keyword=test
-        // 上記からタグリンクをクリックした際の挙動を推測すること
-
         // フリーワードとタグの取得
         if($this->request->getQuery()==null){
             $keyword = null;
@@ -593,26 +587,7 @@ class OrdererController extends AppController
                     'item_image' => 'Items.image', 
                     'tag_names' => 'group_concat(Tags.name SEPARATOR ",")'
                 ])
-            );  
-
-            // 終結前の実装だか、matchingでCakePHP特有の引数の渡し方をしているの残します。
-            // $Items = $this->paginate(
-            //     $this->Items->find('all',[
-            //         'conditions' => [
-            //             'Items.name LIKE' => '%'.$keyword.'%',
-            //         ],
-            //         'group' => 'Items.id having count(Items.id) >= '.count($tags)
-            //     ])->matching(
-            //         "Tags", function($q) use($tags){
-            //             return $q->where(['Tags.name IN' => $tags]);
-            //         }
-            //     )->select([
-            //         'item_id' => 'Items.id',
-            //         'item_name' => 'Items.name',
-            //         'item_image' => 'Items.image', 
-            //         'tag_names' => 'group_concat(Tags.name SEPARATOR ",")'
-            //     ])
-            // );    
+            );   
         }
 
         // タグ一覧の取得

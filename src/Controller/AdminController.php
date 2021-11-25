@@ -112,43 +112,6 @@ class AdminController extends AppController
      */
     public function edit($id = null)
     {
-        // ポストされたワンタイムチケットを取得する。
-        $ticket = $this->request->getData('ticket');
-
-        // セッションオブジェクトの取得
-        $session = $this->getRequest()->getSession();
-
-        // セッション変数に保存されたワンタイムチケットを取得する。
-        $save = $session->read('ticket');
-
-        // セッション変数を解放し、ブラウザの戻るボタンで戻った場合に備える
-        $session->delete('ticket');
-
-        // ポストされたワンタイムチケットの中身が空だった、
-        // または、ポストすらされてこなかった場合、
-        // 不正なアクセスとみなして強制終了する。
-        if ($ticket === '') {
-
-            // 不正なアクセスであることを通知
-            $this->Flash->error(__('不正なアクセスです。'));
-            
-            // 注文一覧にリダイレクト
-            return $this->redirect(['action' => 'index']);
-            
-        }
-
-        // ブラウザの戻るボタンで戻った場合は、セッション変数が存在しないため、
-        // 2重送信とみなすことができる。
-        // また、不正なアクセスの場合もワンタイムチケットが同じになる確率は低いため、
-        // 不正アクセス防止にもなる。
-        if($ticket != $save){
-
-            // 不正なアクセスであることを通知
-            $this->Flash->error(__('二重送信のため処理は実行されませんでした。'));
-            
-            // 注文一覧にリダイレクト
-            return $this->redirect(['action' => 'index']);
-        }
 
         // 外部モデル呼び出し
         $this->loadModels(['OrderList','Deliverer']);
@@ -166,6 +129,44 @@ class AdminController extends AppController
         // リクエストが「put」であったか確認
         if ($this->request->is('put')) {
             // 配達者変更時
+
+            // ポストされたワンタイムチケットを取得する。
+            $ticket = $this->request->getData('ticket');
+            
+            // セッションオブジェクトの取得
+            $session = $this->getRequest()->getSession();
+            
+            // セッション変数に保存されたワンタイムチケットを取得する。
+            $save = $session->read('ticket');
+            
+            // セッション変数を解放し、ブラウザの戻るボタンで戻った場合に備える
+            $session->delete('ticket');
+            
+            // ポストされたワンタイムチケットの中身が空だった、
+            // または、ポストすらされてこなかった場合、
+            // 不正なアクセスとみなして強制終了する。
+            if ($ticket === '') {
+            
+                // 不正なアクセスであることを通知
+                $this->Flash->error(__('不正なアクセスです。'));
+                
+                // 注文一覧にリダイレクト
+                return $this->redirect(['action' => 'index']);
+                
+            }
+        
+            // ブラウザの戻るボタンで戻った場合は、セッション変数が存在しないため、
+            // 2重送信とみなすことができる。
+            // また、不正なアクセスの場合もワンタイムチケットが同じになる確率は低いため、
+            // 不正アクセス防止にもなる。
+            if($ticket != $save){
+            
+                // 不正なアクセスであることを通知
+                $this->Flash->error(__('二重送信のため処理は実行されませんでした。'));
+                
+                // 注文一覧にリダイレクト
+                return $this->redirect(['action' => 'index']);
+            }
 
             if($this->request->getData('delivererId')!=null){
                 // 注文者IDが入力されていた場合
