@@ -48,6 +48,15 @@
     </h2>
 </section>
 <section class="section">
+    <h1 class="title is-size-5-mobile is-size-3-tablet">サンプルデータを使用した動作が確認したい</h1>
+    <h2 class="subtitle is-size-6-mobile is-size-4-tablet">
+        取り急ぎ、サンプルデータを使用した動作をご確認されたい方は以下のアカウントにログインをお願いします。<br><br>
+        管理者・・・Email：admin@hoge.jp／パスワード：admin<br>
+        注文者・・・Email：orderer1@hoge.jp／パスワード：orderer<br>
+        配達者・・・Email：deliverer1@hoge.jp／パスワード：deliverer<br>
+    </h2>
+</section>
+<section class="section">
     <h1 class="title is-size-5-mobile is-size-3-tablet">どうやって使うの？</h1>
     <h2 class="subtitle is-size-6-mobile is-size-4-tablet">
         以下の順番で操作します。<br><br>
