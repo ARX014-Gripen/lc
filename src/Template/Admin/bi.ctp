@@ -11,6 +11,8 @@
 <?= $this->Html->script('//cdn.jsdelivr.net/chartist.js/latest/chartist.min.js') ?>
 <?= $this->Html->script('https://cdn.jsdelivr.net/npm/chart.js@2.9.3/dist/Chart.min.js') ?>
 <?= $this->Html->script('burger') ?>
+<?= $this->Html->script('pagetop') ?>
+<?= $this->Html->css('pagetop') ?>
 <section class="hero is-small" style="background-color:orange">
     <div class="hero-body">
         <div class="navbar-brand">
@@ -47,33 +49,86 @@
     </div>
 </section>
 <?= $this->Flash->render() ?>
+<p class="pagetop" style="display: block;">
+    <a href="#">
+        <i class="fas fa-chevron-up"></i>
+    </a>
+</p>
 <section class="section">
-    <div class="columns is-centered  is-desktop">
-        <div class="column">
-            <h2 class="subtitle is-size-6-mobile is-size-4-tablet">ユーザの割合</h2>
-            <canvas id="myChart1" style="position: relative; height:100; width:150"></canvas>
-        </div>
-        <div class="column">
-            <h2 class="subtitle is-size-6-mobile is-size-4-tablet">注文数ランキング</h2>
-            <?php
-                $rank = 1;
-                $cnt = 1;
-                $bef_point = 0;
-            ?>
-            <?php foreach ($deliverer_ranking as $deliverer): ?>
-                <?php
-                    if($bef_point != (int)$deliverer->order_count){
-                        $rank = $cnt;
-                    }
-                ?>
-                <div style="padding-left: 35px;"><?= h($rank.'．') ?><?= mb_strimwidth( h($deliverer->deliverer_name), 0, 30, '…', 'UTF-8' ); ?></div>
-                <?php
-                    $bef_point = (int)$deliverer->order_count;
-                    $cnt++;
-                ?>
-            <?php endforeach; ?>
-            </ol>
-        </div>
+    <div class="container">
+        <div class="columns is-centered">
+            <div class="colimn is-flex-grow-1">
+                <div class="columns is-mobile is-multiline">
+                    <div class="column is-full-mobile is-half-tablet is-half-desktop">
+                        <h2 class="subtitle is-size-6-mobile is-size-4-tablet">ユーザの割合</h2>
+                        <canvas id="myChart1" style="position: relative; height:100; width:150"></canvas>
+                    </div>
+                    <div class="column is-full-mobile is-half-tablet is-half-desktop">
+                        <h2 class="subtitle is-size-6-mobile is-size-4-tablet">注文数ランキング</h2>
+                        <?php
+                            $rank = 1;
+                            $cnt = 1;
+                            $bef_point = 0;
+                        ?>
+                        <?php foreach ($deliverer_ranking as $deliverer): ?>
+                            <?php
+                                if($deliverer->deliverer_name==null){
+                                    continue;
+                                }
+                                if($bef_point != (int)$deliverer->order_count){
+                                    $rank = $cnt;
+                                }
+                            ?>
+                            <div style="padding-left: 35px;"><?= h($rank.'．') ?><?= mb_strimwidth( h($deliverer->deliverer_name), 0, 30, '…', 'UTF-8' ); ?></div>
+                            <?php
+                                $bef_point = (int)$deliverer->order_count;
+                                $cnt++;
+                            ?>
+                        <?php endforeach; ?>
+                    </div>
+                    <div class="column is-full-mobile is-half-tablet is-half-desktop">
+                        <h2 class="subtitle is-size-6-mobile is-size-4-tablet">商品ランキング</h2>
+                        <?php
+                            $rank = 1;
+                            $cnt = 1;
+                            $bef_point = 0;
+                        ?>
+                        <?php foreach ($item_ranking as $item): ?>
+                            <?php
+                                if($bef_point != (int)$item->item_count){
+                                    $rank = $cnt;
+                                }
+                            ?>
+                            <div style="padding-left: 35px;"><?= h($rank.'．') ?><?= mb_strimwidth( h($item->item_name), 0, 30, '…', 'UTF-8' ); ?></div>
+                            <?php
+                                $bef_point = (int)$item->item_count;
+                                $cnt++;
+                            ?>
+                        <?php endforeach; ?>
+                    </div>
+                    <div class="column is-full-mobile is-half-tablet is-half-desktop">
+                        <h2 class="subtitle is-size-6-mobile is-size-4-tablet">タグランキング</h2>
+                        <?php
+                            $rank = 1;
+                            $cnt = 1;
+                            $bef_point = 0;
+                        ?>
+                        <?php foreach ($tag_ranking as $tag): ?>
+                            <?php
+                                if($bef_point != (int)$tag->tag_count){
+                                    $rank = $cnt;
+                                }
+                            ?>
+                            <div style="padding-left: 35px;"><?= h($rank.'．') ?><?= mb_strimwidth( h($tag->tag_name), 0, 30, '…', 'UTF-8' ); ?></div>
+                            <?php
+                                $bef_point = (int)$tag->tag_count;
+                                $cnt++;
+                            ?>
+                        <?php endforeach; ?>
+                    </div>
+                <div>
+            <div>
+        <div>
     </div>
 </section>
 <script>

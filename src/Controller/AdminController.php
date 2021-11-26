@@ -132,38 +132,38 @@ class AdminController extends AppController
 
             // ポストされたワンタイムチケットを取得する。
             $ticket = $this->request->getData('ticket');
-            
+
             // セッションオブジェクトの取得
             $session = $this->getRequest()->getSession();
-            
+
             // セッション変数に保存されたワンタイムチケットを取得する。
             $save = $session->read('ticket');
-            
+
             // セッション変数を解放し、ブラウザの戻るボタンで戻った場合に備える
             $session->delete('ticket');
-            
+
             // ポストされたワンタイムチケットの中身が空だった、
             // または、ポストすらされてこなかった場合、
             // 不正なアクセスとみなして強制終了する。
             if ($ticket === '') {
-            
+
                 // 不正なアクセスであることを通知
                 $this->Flash->error(__('不正なアクセスです。'));
-                
+
                 // 注文一覧にリダイレクト
                 return $this->redirect(['action' => 'index']);
-                
+
             }
-        
+
             // ブラウザの戻るボタンで戻った場合は、セッション変数が存在しないため、
             // 2重送信とみなすことができる。
             // また、不正なアクセスの場合もワンタイムチケットが同じになる確率は低いため、
             // 不正アクセス防止にもなる。
             if($ticket != $save){
-            
+
                 // 不正なアクセスであることを通知
                 $this->Flash->error(__('二重送信のため処理は実行されませんでした。'));
-                
+
                 // 注文一覧にリダイレクト
                 return $this->redirect(['action' => 'index']);
             }
@@ -256,17 +256,7 @@ class AdminController extends AppController
     public function bi()
     {
         // 外部モデル呼び出し
-        $this->loadModels(['OrderList','Users']);
-
-        // 注文数ランキング
-        // 注文表、配達者の結合表
-        $orderList = $this->OrderList->find();
-        $deliverer_ranking = $orderList->contain(['Deliverer']
-            )->select([
-                'order_count' => $orderList->func()->count('*'),
-                'deliverer_id' => 'OrderList.deliverer_id',
-                'deliverer_name' => 'Deliverer.name'
-            ])->group('OrderList.deliverer_id')->order(['order_count' => 'DESC'])->limit(5)->all();
+        $this->loadModels(['OrderList','Users','Items','Tags','ItemsToTags']);
 
         // 役割毎のユーザー数一覧
         $users =  $this->Users->find();
@@ -285,8 +275,86 @@ class AdminController extends AppController
             $role_count = array_merge(array($result['role_count']),$role_count);
         }
 
+
+        // 注文数ランキング
+        // 注文表、配達者の結合表
+        $orderList = $this->OrderList->find();
+        $deliverer_ranking = $orderList->contain(['Deliverer']
+        )->select([
+            'order_count' => $orderList->func()->count('*'),
+            'deliverer_id' => 'OrderList.deliverer_id',
+            'deliverer_name' => 'Deliverer.name'
+        ])->group(
+            'OrderList.deliverer_id'
+        )->order([
+            'order_count' => 'DESC',
+            'deliverer_id' => 'ASC'
+        ])->limit(10)->all();        
+
+        // 商品ランキング
+        // 注文表、商品一覧の結合表
+        $orderList = $this->OrderList->find();
+        $subqueryA = $orderList->select([
+            'item_count' => $orderList->func()->count('*'),
+            'item_id_from_order_list' => 'OrderList.item_id'
+        ])->group(
+            'item_id_from_order_list'
+        )->order(['item_count' => 'DESC','item_id_from_order_list'=>'ASC']);
+
+        $item_ranking = $this->Items->find(
+            'all'
+        )->join([
+            'CountItems' => [
+                'table' => $subqueryA,
+                'type' => 'inner',
+                'conditions' => 'Items.id = CountItems.item_id_from_order_list'
+            ]
+        ])->select([
+            'item_name' => 'Items.name',
+            'item_count' => 'CountItems.item_count'
+        ])->limit(10);
+
+
+        // タグランキング
+        $tags = $this->Tags->find();
+        $subqueryA = $this->ItemsToTags->find(
+        )->select([
+            'item_id_from_items_to_tags' => 'ItemsToTags.item_id',
+            'tag_id_from_items_to_tags' => 'ItemsToTags.tag_id'
+        ]);
+        $subqueryB = $this->OrderList->find(
+        )->select([
+            'item_id_from_order_list' => 'OrderList.item_id'
+        ]);
+        
+        $tag_ranking = $tags->join([
+            'SearchTags' => [
+                'table' => $subqueryA,
+                'type' => 'left',
+                'conditions' => 'Tags.id = SearchTags.tag_id_from_items_to_tags'
+            ],
+            'SearchItems' => [
+                'table' => $subqueryB,
+                'type' => 'inner',
+                'conditions' => 'SearchTags.item_id_from_items_to_tags = SearchItems.item_id_from_order_list'
+            ]
+        ])->select([
+            'tag_count' => $tags->func()->count('*'),
+            'tag_name' => 'Tags.name',
+            'tag_id' => 'Tags.id'
+        ])->group(
+            'tag_name'
+        )->order([
+            'tag_count' => 'DESC',
+            'tag_id' => 'ASC'
+        ])->limit(10)->all();
+
+
+        // アンケート：解答率
+        // アンケート：満足度ランキング
+
          // テンプレートへのデータをセット
-         $this->set(compact('deliverer_ranking','role','role_count'));
+         $this->set(compact('deliverer_ranking','role','role_count','item_ranking','tag_ranking'));
 
     }
 
