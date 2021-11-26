@@ -324,7 +324,7 @@ class UsersController extends AppController
                     // 役割が「管理者」だった場合
 
                     // AdminControllerへリダイレクト
-                    return $this->redirect(['controller' => 'Admin', 'action' => 'index']);
+                    return $this->redirect(['controller' => 'Admin', 'action' => 'bi']);
                 }elseif($user['role'] == 'deliverer'){
                     // 役割が「配達者」だった場合
 
