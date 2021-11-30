@@ -99,6 +99,22 @@
             <li><del>管理者アカウントに注文全体の統計機能を追加。</del>2021/10/9実装済み</li>
             <li><del>毎日0時のCSVファイルへの書き出し。</del>2021/10/14実装済み</li>
             <li><del>他の自作ポートフォリオ（タグ付き商品管理）との連携。</del>2021/11/25実装済み</li>
+            <li><del>メール本文に記載したURLを利用したアンケート機能。</del>2021/11/30実装済み</li>
+        </ul>
+    </h2>
+</section>
+<section class="section">
+    <h1 class="title is-size-5-mobile is-size-3-tablet">実装されている機能</h1>
+    <h2 class="subtitle is-size-6-mobile is-size-4-tablet">
+        現在までに以下の機能が実装されています。<br><br>
+        <ul class="subpage-list">
+            <li>注文時にGPSを利用して注文者に一番近い配達者を選定する機能</li>
+            <li>配達先のルートを検索する機能</li>            
+            <li>注文時にSendGridを利用した注文内容のメールを送信する機能</li>
+            <li>配達完了時にSendGridを利用したアンケート回答依頼メールを送信する機能</li>
+            <li>タグによる商品管理機能</li>            
+            <li>注文時のタグによる商品検索機能</li>
+            <li>BIツール機能</li>
         </ul>
     </h2>
 </section>
