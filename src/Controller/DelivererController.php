@@ -5,6 +5,7 @@ use App\Controller\AppController;
 use Cake\Event\Event;
 // use Cake\Network\Http\Client;
 use Cake\Http\Client;
+use Cake\Mailer\Email;
 
 /**
  * Deliverer Controller
@@ -195,9 +196,9 @@ class DelivererController extends AppController
             'contain' => [],
         ]);
 
-            // リクエストが「edit」であったか確認
-            if ($this->request->is(['patch', 'post', 'put'])) {
-                // リクエストが「edit」であった場合
+        // リクエストが「edit」であったか確認
+        if ($this->request->is(['patch', 'post', 'put'])) {
+            // リクエストが「edit」であった場合
             
             // ポストされたワンタイムチケットを取得する。
             $ticket = $this->request->getData('ticket');
@@ -306,7 +307,7 @@ class DelivererController extends AppController
     public function delivered($id = null)
     {
         // 外部モデル呼び出し
-        $this->loadModels(['OrderList']);
+        $this->loadModels(['OrderList','Users','Items','Orderer']);
 
         // 注文IDの取得
         $id = $this->request->getQuery('id');
@@ -323,6 +324,48 @@ class DelivererController extends AppController
         if ($this->OrderList->save($order)) {
             // 保存が成功した場合
 
+            // メール本文に必要な情報を取得
+            $orderer = $this->Orderer->get($order->orderer_id);
+            $user = $this->Users->get($order->orderer_id);
+            $item = $this->Items->get($order->item_id);
+            $now = time();
+            $expiry_string = $now + (24 * 60 * 60);
+            $password = 'hogehoge';
+            $cipher = 'AES-256-ECB';
+            $encrypted_expiry_string = rawurlencode(openssl_encrypt($expiry_string, $cipher, $password));
+            $item_id = rawurlencode(openssl_encrypt($order->item_id, $cipher, $password));
+            $order_id = rawurlencode(openssl_encrypt($order->id, $cipher, $password));
+
+            // メール設定
+            $email = new Email('Sendgrid');
+            $email->setFrom(['konakera@gmail.com' => '配送サービス'])
+                ->setTransport('SendgridEmail')
+                ->setTo($user->email)
+            ->setSubject('アンケート回答のお願い');
+
+            // メール送信
+            if($email->send("
+{$orderer->name} 様
+
+{$item->name}
+をご注文頂き、誠にありがとうございます。
+
+つきましては、お手数ですが
+下記のリンクよりアンケートのご回答を
+よろしくお願いいたします
+https://konakera.sakura.ne.jp/questionnaire/answer?item={$item_id}&order={$order_id}&expiry={$encrypted_expiry_string}
+            ")){
+                // メール送信が成功した場合
+
+                // 保存処理に成功したことを通知
+                $this->Flash->success(__('アンケート依頼送信に成功しました。'));
+            }else{
+                // メール送信が失敗した場合
+
+                // 処理が失敗したことを通知
+                $this->Flash->error(__('アンケート送信に失敗しました。'));
+            }
+            
             // 処理成功の通知
             $this->Flash->success(__('ID'.$id.'の注文の配達を完了しました。'));
 
@@ -336,6 +379,12 @@ class DelivererController extends AppController
 
     // ログアウト
     public function logout(){
+        // セッションオブジェクトの取得
+        $session = $this->getRequest()->getSession();
+
+        // セッション変数を解放し、ブラウザの戻るボタンで戻った場合に備える
+        $session->delete('ticket');        
+
         // 認証情報削除してリダイレクト
         // 認証設定によりログイン画面に遷移
         return $this->redirect($this->Auth->Logout());

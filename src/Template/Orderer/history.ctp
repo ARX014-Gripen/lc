@@ -4,7 +4,7 @@
  * @var \App\Model\Entity\Orderer[]|\Cake\Collection\CollectionInterface $orderer
  */
 ?>
-<?php $this->assign('title', '注文一覧'); ?>
+<?php $this->assign('title', '注文履歴'); ?>
 <?= $this->Html->script('//cdnjs.cloudflare.com/ajax/libs/jquery-infinitescroll/2.1.0/jquery.infinitescroll.min.js') ?>
 <?= $this->Html->script('scroll') ?>
 <?= $this->Html->script('burger') ?>

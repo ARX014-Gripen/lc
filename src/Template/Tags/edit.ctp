@@ -4,7 +4,7 @@
  * @var \App\Model\Entity\Orderer $orderer
  */
 ?>
-<?php $this->assign('title', '注文'); ?>
+<?php $this->assign('title', 'タグ名変更'); ?>
 <?php 
    // ワンタイムチケットを生成する。
     $ticket = md5(uniqid(rand(), true));

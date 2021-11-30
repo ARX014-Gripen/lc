@@ -7,9 +7,9 @@
 <?php $this->assign('title', '注文'); ?>
 <?php 
    // ワンタイムチケットを生成する。
-    $ticket = md5(uniqid(rand(), true));
-    $session = $this->getRequest()->getSession();
-    $session->write('ticket',$ticket);
+   $ticket = md5(uniqid(rand(), true));
+   $session = $this->getRequest()->getSession();
+   $session->write('ticket',$ticket); 
 ?>
 <?= $this->Html->script('//cdnjs.cloudflare.com/ajax/libs/jquery-infinitescroll/2.1.0/jquery.infinitescroll.min.js') ?>
 <?= $this->Html->script('item_scroll') ?>

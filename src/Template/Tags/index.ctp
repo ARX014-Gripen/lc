@@ -4,7 +4,7 @@
  * @var \App\Model\Entity\User[]|\Cake\Collection\CollectionInterface $Users
  */
 ?>
-<?php $this->assign('title', 'ユーザー一覧'); ?>
+<?php $this->assign('title', 'タグ一覧'); ?>
 <?= $this->Html->script('burger') ?>
 <section class="hero is-small" style="background-color:orange">
     <div class="hero-body">
@@ -49,7 +49,7 @@
 <?= $this->Flash->render() ?>
 <section class="section">
     <div class="columns is-centered">
-        <h3 class="title is-centered is-size-5"><?= __('ユーザー一覧') ?></h3>
+        <h3 class="title is-centered is-size-5"><?= __('タグ一覧') ?></h3>
     </div>
     <div class="columns  is-centered">
         <div class="column"></div>

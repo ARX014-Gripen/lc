@@ -344,9 +344,9 @@ class OrdererController extends AppController
         // 新規注文情報の生成
         $orderList = $this->OrderList->newEntity();
 
-            // リクエストが「post」であったか確認
-            if ($this->request->is('post')) {
-            
+        // リクエストが「post」であったか確認
+        if ($this->request->is('post')) {
+        
             // リクエストが「post」であった場合 
             // ポストされたワンタイムチケットを取得する。
             $ticket = $this->request->getData('ticket');    
@@ -406,11 +406,11 @@ class OrdererController extends AppController
 
                 // 配達者一覧(届け元)を取得
                 $deliverers = $this->Deliverer->find('all')->all()->toList();
-                
+
                 // 届け先の座標を設定
                 $start_lat = $orderer->lat;
                 $start_lng = $orderer->lng;
-                
+
                 // 各届け元と届け先との距離を計算
                 $sortList = array();
                 foreach($deliverers as $key => $deliverer){
@@ -430,18 +430,18 @@ class OrdererController extends AppController
                 
                     // 移動量を計算
                     $distance = (int)(sqrt(pow(abs($lat_dist / 0.00027778 * 30.9221438), 2) + pow(abs($lng_dist / 0.00027778 * $m_lng), 2)));  
-        
+                
                     // 届け元候補リストに情報を追加
                     $sortList = array_merge(array('_'.$end_key=>$distance),$sortList);
                 }
-        
+            
                 // 最寄りの店舗をソート(昇順)で洗い出し
                 asort($sortList);
-        
+            
                 // 最寄り(先頭要素)の店舗情報回収
                 $first_value = reset($sortList);
                 $first_key = ltrim(key($sortList),'_');
-        
+            
                 // 配達者と注文完了状態を設定
                 $this->request = $this->request->withData('orderer_id', (int)$this->Auth->user('id'));
                 $this->request = $this->request->withData('deliverer_id', (int)$first_key);
@@ -489,7 +489,7 @@ class OrdererController extends AppController
                         // 処理が失敗したことを通知
                         $this->Flash->error(__('メールの送信に失敗しました。'));
                     }
-    
+                
                     // 注文一覧にリダイレクト
                     return $this->redirect(['action' => 'index']);
                 }
@@ -599,6 +599,12 @@ class OrdererController extends AppController
 
     // ログアウト
     public function logout(){
+        // セッションオブジェクトの取得
+        $session = $this->getRequest()->getSession();
+
+        // セッション変数を解放し、ブラウザの戻るボタンで戻った場合に備える
+        $session->delete('ticket');
+
         // 認証情報削除してリダイレクト
         // 認証設定によりログイン画面に遷移
         return $this->redirect($this->Auth->Logout());

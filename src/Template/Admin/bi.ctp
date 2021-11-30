@@ -5,6 +5,8 @@
  */
     $role = json_encode($role);
     $role_count = json_encode($role_count);
+    $questionnaire = json_encode($questionnaire);
+    $questionnaire_count = json_encode($questionnaire_count);
 ?>
 <?php $this->assign('title', 'BI'); ?>
 <?= $this->Html->css('//cdn.jsdelivr.net/chartist.js/latest/chartist.min.css') ?>
@@ -62,6 +64,30 @@
                     <div class="column is-full-mobile is-half-tablet is-half-desktop">
                         <h2 class="subtitle is-size-6-mobile is-size-4-tablet">ユーザの割合</h2>
                         <canvas id="myChart1" style="position: relative; height:100; width:150"></canvas>
+                    </div>
+                                        <div class="column is-full-mobile is-half-tablet is-half-desktop">
+                        <h2 class="subtitle is-size-6-mobile is-size-4-tablet">アンケート：解答率</h2>
+                        <canvas id="myChart2" style="position: relative; height:100; width:150"></canvas>
+                    </div>
+                    <div class="column is-full-mobile is-half-tablet is-half-desktop">
+                        <h2 class="subtitle is-size-6-mobile is-size-4-tablet">アンケート：満足度ランキング</h2>
+                        <?php
+                            $rank = 1;
+                            $cnt = 1;
+                            $bef_point = 0;
+                        ?>
+                        <?php foreach ($satisfaction_ranking as $item): ?>
+                            <?php
+                                if($bef_point != (int)$item->item_point){
+                                    $rank = $cnt;
+                                }
+                            ?>
+                            <div style="padding-left: 35px;"><?= h($rank.'．') ?><?= mb_strimwidth( h($item->item_name), 0, 30, '…', 'UTF-8' ); ?></div>
+                            <?php
+                                $bef_point = (int)$item->item_point;
+                                $cnt++;
+                            ?>
+                        <?php endforeach; ?>
                     </div>
                     <div class="column is-full-mobile is-half-tablet is-half-desktop">
                         <h2 class="subtitle is-size-6-mobile is-size-4-tablet">注文数ランキング</h2>
@@ -134,10 +160,12 @@
 <script>
     let role = JSON.parse('<?php echo $role; ?>');
     let role_count = JSON.parse('<?php echo $role_count; ?>');
+    let questionnaire = JSON.parse('<?php echo $questionnaire; ?>');
+    let questionnaire_count = JSON.parse('<?php echo $questionnaire_count; ?>');
 
     var ctx1 = $("#myChart1");
 
-    // ドーナツグラフの場合
+    // ドーナツグラフ
     var myDoughnutChart = new Chart(ctx1, {
         type: 'doughnut',
         data:{
@@ -151,5 +179,20 @@
         }
     });
 
+    var ctx2 = $("#myChart2");
+
+    //  円グラフ
+    var myDoughnutChart = new Chart(ctx2, {
+        type: 'pie',
+        data:{
+            datasets:[{
+                data:questionnaire_count,
+                backgroundColor: ['skyblue','darksalmon']
+            }],
+            labels: questionnaire
+        },
+        options: {
+        }
+    });
 
 </script>

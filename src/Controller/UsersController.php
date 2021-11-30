@@ -351,6 +351,12 @@ class UsersController extends AppController
 
     // ログアウト
     public function logout(){
+        // セッションオブジェクトの取得
+        $session = $this->getRequest()->getSession();
+
+        // セッション変数を解放し、ブラウザの戻るボタンで戻った場合に備える
+        $session->delete('ticket');
+
         // 認証情報削除してリダイレクト
         // 認証設定によりログイン画面に遷移
         return $this->redirect($this->Auth->Logout());

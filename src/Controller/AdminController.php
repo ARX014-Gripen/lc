@@ -256,7 +256,7 @@ class AdminController extends AppController
     public function bi()
     {
         // 外部モデル呼び出し
-        $this->loadModels(['OrderList','Users','Items','Tags','ItemsToTags']);
+        $this->loadModels(['OrderList','Users','Items','Tags','ItemsToTags','Satisfaction']);
 
         // 役割毎のユーザー数一覧
         $users =  $this->Users->find();
@@ -351,15 +351,52 @@ class AdminController extends AppController
 
 
         // アンケート：解答率
+        $order_count = $this->OrderList->find('all')->count();
+        $answer_count = $this->Satisfaction->find('all')->count();
+        $questionnaire = array();
+        $questionnaire_count = array();
+        $questionnaire = array_merge(array('不回答'),$questionnaire);
+        $questionnaire = array_merge(array('回答'),$questionnaire);
+        $questionnaire_count = array_merge(array( $order_count - $answer_count ),$questionnaire_count);
+        $questionnaire_count = array_merge(array($answer_count),$questionnaire_count);
+
+
         // アンケート：満足度ランキング
+        $satisfaction = $this->Satisfaction->find();
+        $subqueryA = $satisfaction->select([
+            'satisfaction_point' => $satisfaction->func()->sum('level'),
+            'item_id_from_satisfaction' => 'Satisfaction.item_id'
+        ])->group(
+            'item_id_from_satisfaction'
+        )->order(['satisfaction_point' => 'DESC','item_id_from_satisfaction'=>'ASC']);
+
+        $satisfaction_ranking = $this->Items->find(
+            'all'
+        )->join([
+            'Point' => [
+                'table' => $subqueryA,
+                'type' => 'inner',
+                'conditions' => 'Items.id = Point.item_id_from_satisfaction'
+            ]
+        ])->select([
+            'item_name' => 'Items.name',
+            'item_point' => 'Point.item_id_from_satisfaction'
+        ])->limit(10);
+
 
          // テンプレートへのデータをセット
-         $this->set(compact('deliverer_ranking','role','role_count','item_ranking','tag_ranking'));
+         $this->set(compact('deliverer_ranking','role','role_count','item_ranking','tag_ranking','questionnaire','questionnaire_count','satisfaction_ranking'));
 
     }
 
     // ログアウト
     public function logout(){
+        // セッションオブジェクトの取得
+        $session = $this->getRequest()->getSession();
+
+        // セッション変数を解放し、ブラウザの戻るボタンで戻った場合に備える
+        $session->delete('ticket');
+
         // 認証情報削除してリダイレクト
         // 認証設定によりログイン画面に遷移
         return $this->redirect($this->Auth->Logout());
