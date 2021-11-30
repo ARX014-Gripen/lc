@@ -106,7 +106,7 @@
 <section class="section">
     <h1 class="title is-size-5-mobile is-size-3-tablet">実装されている機能</h1>
     <h2 class="subtitle is-size-6-mobile is-size-4-tablet">
-        現在までに以下の機能が実装されています。<br><br>
+        現在までに以下の機能を実装しました。<br><br>
         <ul class="subpage-list">
             <li>注文時にGPSを利用して注文者に一番近い配達者を選定する機能</li>
             <li>配達先のルートを検索する機能</li>            
