@@ -108,6 +108,7 @@ class QuestionnaireController extends AppController
             $answer->item_id = $item_id;
             $answer->order_id = $order_id;
             $answer->level = $this->request->getData('answer');
+            $answer->delivery_datetime = $now;
 
             // 配達者情報の保存
             if ($this->Satisfaction->save($answer)) {

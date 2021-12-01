@@ -403,6 +403,60 @@ class ItemsController extends AppController
     }
 
     /**
+     * View method
+     *
+     * @param string|null $id User id.
+     * @return \Cake\Http\Response|null
+     * @throws \Cake\Datasource\Exception\RecordNotFoundException When record not found.
+     */
+    public function view($id = null)
+    {
+        // 外部モデル呼び出し
+        $this->loadModels(['Items','Satisfaction','ItemsToTags']);
+
+        // 商品一覧より指定されたIDの商品を取得
+        $Item = $this->Items->get($id, [
+            'contain' => [],
+        ]);
+
+        // 商品一覧より指定された商品の満足度の遷移を取得
+        $satisfaction_result = $this->Satisfaction->find(
+            'all'
+        )->where([
+            'Satisfaction.item_id' => $id
+        ])->order(['Satisfaction.delivery_datetime'=>'DESC'])->toList();
+
+        $satisfactions = array();
+        $delivery_datetimes = array();
+        foreach($satisfaction_result as $key => $result){
+            // 満足度リスト作成
+            $satisfactions = array_merge(array($result['level']),$satisfactions);
+            $delivery_datetimes = array_merge(array(date('Y/m/d',strtotime($result['delivery_datetime'])+(9*60*60))),$delivery_datetimes);
+        }
+
+        // 商品一覧より指定された商品に紐づいているタグを取得
+        $selectTags = $this->ItemsToTags->find('all',[
+            'conditions' => [
+                'ItemsToTags.item_id' => $Item->id,
+            ]
+        ])->contain([
+            'Tags'
+        ])->select([
+            'tag_id' => 'Tags.id',
+            'tag_name' => 'Tags.name'
+        ]);
+
+        $Tags = array();
+        foreach($selectTags as $key => $result){
+            // 満足度リスト作成
+            $Tags = array_merge(array($result['tag_name']),$Tags);
+        }
+
+        // テンプレートへのデータをセット
+        $this->set(compact('Item','satisfactions','delivery_datetimes','Tags'));
+    }
+
+    /**
      * Delete method
      *
      * @param string|null $id User id.

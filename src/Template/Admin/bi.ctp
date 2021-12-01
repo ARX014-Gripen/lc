@@ -65,7 +65,7 @@
                         <h2 class="subtitle is-size-6-mobile is-size-4-tablet">ユーザの割合</h2>
                         <canvas id="myChart1" style="position: relative; height:100; width:150"></canvas>
                     </div>
-                                        <div class="column is-full-mobile is-half-tablet is-half-desktop">
+                    <div class="column is-full-mobile is-half-tablet is-half-desktop">
                         <h2 class="subtitle is-size-6-mobile is-size-4-tablet">アンケート：解答率</h2>
                         <canvas id="myChart2" style="position: relative; height:100; width:150"></canvas>
                     </div>

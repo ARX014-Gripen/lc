@@ -32,5 +32,6 @@ class Satisfaction extends Entity
         'order_id' => true,
         'item_id' => true,
         'level' => true,
+        'delivery_datetime' => true,
     ];
 }

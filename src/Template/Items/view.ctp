@@ -3,14 +3,19 @@
  * @var \App\View\AppView $this
  * @var \App\Model\Entity\Orderer $orderer
  */
+    $satisfactions = json_encode($satisfactions);
+    $delivery_datetimes = json_encode($delivery_datetimes);
 ?>
-<?php $this->assign('title', '商品変更'); ?>
+<?php $this->assign('title', '商品詳細'); ?>
 <?php 
    // ワンタイムチケットを生成する。
     $ticket = md5(uniqid(rand(), true));
     $session = $this->getRequest()->getSession();
     $session->write('ticket',$ticket);
 ?>
+<?= $this->Html->css('//cdn.jsdelivr.net/chartist.js/latest/chartist.min.css') ?>
+<?= $this->Html->script('//cdn.jsdelivr.net/chartist.js/latest/chartist.min.js') ?>
+<?= $this->Html->script('https://cdn.jsdelivr.net/npm/chart.js@2.9.3/dist/Chart.min.js') ?>
 <?= $this->Html->script('burger') ?>
 <?= $this->Html->script('nomal_submit') ?>
 <section class="hero is-small" style="background-color:orange">
@@ -60,19 +65,16 @@
 <section class="section">
     <div class="columns is-centered">
         <div class="column is-half">
-          <?= $this->Form->create($Item,['class'=>'box is-centered is-4','enctype' => 'multipart/form-data']) ?>
             <div class="field">
-              <label class="label is-size-5">商品変更</label>
+              <label class="label is-size-5">商品詳細</label>
             </div>
             <div class="field">
               <label class="label">商品名</label>
               <div class="control">
-                <?= $this->Form->text("name",['placeholder'=>'商品名を入力してください','class'=>'input','required'=>true]) ?>
+                <?= h($Item->name) ?>
               </div>
-              <?php echo $this->Form->error('name') ?>
             </div>
             <div class="field">
-              <label for="" class="label">画像</label>
               <div class="card">
                 <div class="card-image">
                   <figure class="image is-4by3">
@@ -80,44 +82,55 @@
                   </figure>
                 </div>
               </div>
-              <div class="control">
-                <input type="file" name="image" accept="image/*">
-              </div>
-              <?php echo $this->Form->error('image') ?>
             </div>
             <div class="field">
               <label for="" class="label">タグ</label>
               <div class="control">
                 <div class="select is-multiple">
-                    <select multiple size="3" name="tags[]" required>
-                        <?php
-                            foreach ($Tags as $Tag):
-                                $count=0;
-                                foreach ($selectTags as $selectTag):
-                                    if($selectTag->tag_name==$Tag->name){
-                                        $count++;
-                                    }
-                                endforeach;
-                                if($count>0){
-                                    echo "<option value=".h($Tag->id)." selected>".h($Tag->name)."</option>";
-                                }else{
-                                    echo "<option value=".h($Tag->id).">".h($Tag->name)."</option>";
-                                }
-                            endforeach;
-                        ?>
-                    </select>
+                    <?php foreach ($Tags as $tag): ?>
+                        <?= $this->Html->link(__('#'.$tag),'https://konakera.sakura.ne.jp/items?tags%5B%5D='.$tag,['class'=>'is-small']) ?>
+                    <?php endforeach; ?>  
                 </div>
               </div>
-              <?php echo $this->Form->error('tags') ?>
             </div>
-            <div class="has-text-centered">
-              <div class="field">
-                <?= $this->Form->button('登録',['class'=>'button is-success submit-button']); ?>
-              </div>
+            <div class="field">
+                <label for="" class="label">満足度</label>
+                <canvas id="myChart1" style="position: relative; height:100; width:150"></canvas>
             </div>
-            <input type="hidden" name="ticket" value="<?=$ticket?>">
-          <?= $this->Form->end() ?>
         </div>
     </div>
 </section>
+<script>
+    let satisfactions = JSON.parse('<?php echo $satisfactions; ?>');
+    let delivery_datetimes = JSON.parse('<?php echo $delivery_datetimes; ?>');
 
+    var ctx1 = $("#myChart1");
+// array(6) { [0]=> int(5) [1]=> int(4) [2]=> int(1) [3]=> int(3) [4]=> int(1) [5]=> int(5) }
+    // ドーナツグラフ
+    var myDoughnutChart = new Chart(ctx1, {
+        type: 'line',
+        data:{
+            labels:delivery_datetimes,
+            datasets:[{
+                data:satisfactions,
+                borderColor: 'rgba(255, 100, 100, 1)',
+                lineTension: 0,
+                fill: false,
+                borderWidth: 3,
+                label:'満足度'
+            }],
+        },
+        options: {
+            scales: {
+                yAxes: [{
+                    ticks: {
+                        max: 5,
+                        min: 1,
+                        stepSize: 1,
+                    }
+                }]
+            }
+        }
+    });
+
+</script>

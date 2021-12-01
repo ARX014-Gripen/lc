@@ -5,12 +5,6 @@
  */
 ?>
 <?php $this->assign('title', '注文'); ?>
-<?php 
-   // ワンタイムチケットを生成する。
-   $ticket = md5(uniqid(rand(), true));
-   $session = $this->getRequest()->getSession();
-   $session->write('ticket',$ticket); 
-?>
 <?= $this->Html->script('//cdnjs.cloudflare.com/ajax/libs/jquery-infinitescroll/2.1.0/jquery.infinitescroll.min.js') ?>
 <?= $this->Html->script('item_scroll') ?>
 <?= $this->Html->script('burger') ?>
@@ -84,7 +78,6 @@
                     <button class="button is-success has-text-weight-bold submit-button">注文決定</button>
                   </div>
                 </div>
-                <input type="hidden" name="ticket" value="<?=$ticket?>">
               <?= $this->Form->end() ?>
             </section>
             <footer class="modal-card-foot">

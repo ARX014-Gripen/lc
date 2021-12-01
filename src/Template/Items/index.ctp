@@ -123,6 +123,11 @@
                                 <footer class="card-footer">
                                     <p class="card-footer-item">
                                         <span>
+                                        <?= $this->Html->link(__('商品詳細'), 'https://konakera.sakura.ne.jp/items/view/'.$Item->item_id,['class'=>'button is-info has-text-weight-bold']) ?>
+                                        </span>
+                                    </p>
+                                    <p class="card-footer-item">
+                                        <span>
                                         <?= $this->Html->link(__('商品変更'), 'https://konakera.sakura.ne.jp/items/edit/'.$Item->item_id,['class'=>'button is-warning has-text-weight-bold']) ?>
                                         </span>
                                     </p>

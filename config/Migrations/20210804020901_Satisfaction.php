@@ -28,7 +28,10 @@ class Satisfaction extends AbstractMigration
             'default' => null,
             'null' => false,
         ]);
-    
+        $table->addColumn('delivery_datetime', 'datetime', [
+            'default' => null,
+            'null' => false,
+        ]);    
         // テーブルを作成
         $table->create();
     }
