@@ -123,17 +123,17 @@
                                 <footer class="card-footer">
                                     <p class="card-footer-item">
                                         <span>
-                                        <?= $this->Html->link(__('商品詳細'), 'https://konakera.sakura.ne.jp/items/view/'.$Item->item_id,['class'=>'button is-info has-text-weight-bold']) ?>
+                                        <?= $this->Html->link(__('詳細'), 'https://konakera.sakura.ne.jp/items/view/'.$Item->item_id,['class'=>'button is-info has-text-weight-bold']) ?>
                                         </span>
                                     </p>
                                     <p class="card-footer-item">
                                         <span>
-                                        <?= $this->Html->link(__('商品変更'), 'https://konakera.sakura.ne.jp/items/edit/'.$Item->item_id,['class'=>'button is-warning has-text-weight-bold']) ?>
+                                        <?= $this->Html->link(__('変更'), 'https://konakera.sakura.ne.jp/items/edit/'.$Item->item_id,['class'=>'button is-warning has-text-weight-bold']) ?>
                                         </span>
                                     </p>
                                     <p class="card-footer-item">
                                         <span>
-                                            <?= $this->Html->link(__('商品削除'),'https://konakera.sakura.ne.jp/items/delete?id='.$Item->item_id, ['class'=>'button is-danger has-text-weight-bold','confirm' => __(' ID：{0} の商品を削除します。よろしいですか?', $Item->item_id)]) ?>
+                                            <?= $this->Html->link(__('削除'),'https://konakera.sakura.ne.jp/items/delete?id='.$Item->item_id, ['class'=>'button is-danger has-text-weight-bold','confirm' => __(' ID：{0} の商品を削除します。よろしいですか?', $Item->item_id)]) ?>
                                         </span>
                                     </p>           
                                 </footer>
