@@ -27,9 +27,14 @@
                 <?php if ($deliverer != null): ?>
                     <span class="navbar-item">
                         <?= $this->Html->link(
+                            "配達準備",['action' => 'rootSearch'],['class' => 'button is-success has-text-weight-bold','confirm' => __('本日分までの注文をオススメ配達順番に並び替えますか？')]
+                        ) ?>  
+                    </span>
+                    <span class="navbar-item">
+                        <?= $this->Html->link(
                             "配達者情報変更",['action' => 'edit', $deliverer->id],['class' => 'button is-info has-text-weight-bold']
                         ) ?>  
-                    </span>                       
+                    </span>                                              
                 <?php else: ?>
                     <span class="navbar-item">
                         <?= $this->Html->link(

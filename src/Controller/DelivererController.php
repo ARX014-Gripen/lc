@@ -61,8 +61,17 @@ class DelivererController extends AppController
             'item_name'=>'Items.name',
             'address'=>'Orderer.address',
             'delivery_date'=>'OrderList.delivery_date',
-         ])->where(['OrderList.deliverer_id' => $this->Auth->user('id'),'OrderList.status' => 'ordered']
-         )->distinct('OrderList.id')->order(['groupOrder_delivery_date' => 'ASC','groupOrder_orderer_id'=>'ASC']));
+            'priority'=>'OrderList.priority'
+         ])->where([
+             'OrderList.deliverer_id' => $this->Auth->user('id'),
+             'OrderList.status' => 'ordered'
+        ])->distinct(
+            'OrderList.id'
+        )->order([
+            'priority'=>'ASC',
+            'groupOrder_delivery_date' => 'ASC',
+            'groupOrder_orderer_id'=>'ASC'
+        ]));
 
         // テンプレートへのデータをセット
         $this->set(compact('deliverer','orderList'));
@@ -377,6 +386,87 @@ https://konakera.sakura.ne.jp/questionnaire/answer?item={$item_id}&order={$order
         $this->Flash->error(__('ID'.$id.'の注文の配達を完了に失敗しました。'));
     }
 
+    // 配達順番検索
+    public function rootSearch(){
+
+        // 外部モデル呼び出し
+        $this->loadModels(['OrderList','Deliverer','Orderer']);
+
+        // 本日までの配達先一覧を取得
+        $ordererList = $this->OrderList->find(
+            'all'
+        )->contain([
+            'Orderer'
+        ])->where([
+            'OrderList.deliverer_id' => $this->Auth->user('id'),
+            'OrderList.status' => 'ordered',
+            'delivery_date <=' => date("Y-m-d")
+        ])->group([
+            'OrderList.orderer_id'            
+        ])->select([
+            'orderer_id' => 'OrderList.orderer_id',
+            'name' => 'Orderer.name',
+            'address' => 'Orderer.address',
+            'lat' => 'Orderer.lat',
+            'lng' => 'Orderer.lng'
+        ])->toList();
+
+        // 配達開始場所を取得
+        $deliverer = $this->Deliverer->get($this->Auth->user('id'), [
+            'contain' => [],
+        ]);
+
+        // 配達開始場所を格納
+        $nodeList = array();        
+        array_push(
+            $nodeList,
+            array(
+                'id' => $deliverer->id,
+                'name' => $deliverer->name, 
+                'address' => $deliverer->address,
+                'lat' => $deliverer->lat,
+                'lng' => $deliverer->lng
+            )
+        );
+
+        // 配達先を格納        
+        foreach($ordererList as $key => $orderer){
+            array_push(
+                $nodeList,
+                array(
+                    'id' => $orderer['orderer_id'],
+                    'name' => $orderer['name'],
+                    'address' => $orderer['address'],
+                    'lat' => $orderer['lat'],
+                    'lng' => $orderer['lng']
+                )
+            );
+        }
+        
+        // 移動距離の総和が一番短い配達順番を算出
+        // 巡回セールスマン問題を使用
+        $results = solve($nodeList);
+
+        // 配達順番が手前の注文から順に高優先度を設定
+        foreach($results as $key => $result){
+            $this->OrderList->updateAll(
+                [
+                    'priority'=>($key+1)
+                ],
+                [
+                    'deliverer_id'=>$this->Auth->user('id'),
+                    'orderer_id'=>$result['id'],
+                    'status'=>'ordered',
+                    'delivery_date <='=>date("Y-m-d")
+                ]
+            );
+        }
+
+        // 注文一覧へのリダイレクト
+        return $this->redirect(['action' => 'index']);
+
+    }
+
     // ログアウト
     public function logout(){
         // セッションオブジェクトの取得
@@ -409,4 +499,98 @@ https://konakera.sakura.ne.jp/questionnaire/answer?item={$item_id}&order={$order
         // デフォルトはアクセス不可
         return false;
     }
+}
+
+// 以下巡回セールスマン問題のGreedy法(Kruskalの最小全域木構成アルゴリズム)による解法のメソッド郡
+function solve($data) {
+    // 今回は始点があるのでコメントアウト
+    // array_unshift($data, [0,0,0,0,0]);
+    $n = count($data);
+
+    // $links[$i] : $data[$i] と接続されているノード番号
+    // $data[0] を端点とするためダミーノードと接続済みとして処理する
+    $links = array_fill(0, $n, []);
+    $links[0][0] = PHP_INT_MAX;
+
+    // $edges[$i] :
+    //   $data[$i] の次数が 0 (未接続) の場合は $i
+    //   $data[$i] の次数が 1 (端点) の場合は反対側の端点のノード番号
+    //   $data[$i] の次数が 2 (中間点) の場合は -1
+    $edges = range(0, $n - 1);
+    $edges[0] = PHP_INT_MAX;
+
+    // $distances : ノード間の距離を保持する二次元配列
+    //   $distances[*][0] 一方のノード番号
+    //   $distances[*][1] もう一方のノード番号
+    //   $distances[*][2] ノード間の距離
+    $distances = make_distances($data);
+    usort($distances, function ($a, $b) { return $a[2] <=> $b[2]; });
+    foreach ($distances as [$i, $j, $distance]) {
+        connect($data, $i, $j, $edges, $links);
+    }
+
+    return build_answer($data, $links);
+}
+
+function make_distances($data) {
+    $distances = [];
+    $n = count($data);
+    for ($i = 0; $i < $n; ++$i) {
+        for ($j = $i + 1; $j < $n; ++$j) {
+            // 届け先の座標を設定
+            $start_lat = $data[$i]['lat'];
+            $start_lng = $data[$i]['lng'];
+
+            // 届け元候補の座標設定
+            $end_lat = $data[$j]['lat'];
+            $end_lng = $data[$j]['lng'];
+            
+            // 緯度、経度の移動量を計算
+            $lat_dist = ($start_lat - $end_lat);if($lat_dist<0)$lat_dist=$lat_dist*-1;
+            $lng_dist = ($start_lng - $end_lng);if($lng_dist<0)$lng_dist=$lng_dist*-1;
+            
+            // 緯度位置における経度量を計算　地球は丸い
+            $m_lng = 30.9221438 * cos($start_lat / 180 * pi());
+            if($m_lng<0)$m_lng=$m_lng*-1;
+            
+            // 移動量を計算
+            $distance = (int)(sqrt(pow(abs($lat_dist / 0.00027778 * 30.9221438), 2) + pow(abs($lng_dist / 0.00027778 * $m_lng), 2)));  
+
+            $distances[] = [$i, $j, $distance+1];
+        }
+    }
+    return $distances;
+}
+
+function connect($data, $i, $j, &$edges, &$links) {
+    // 既存の経路の中間点から枝分かれしてはいけない
+    if ($edges[$i] == -1 || $edges[$j] == -1) return;
+    // 経路の両端を繋いでループにしてはいけない
+    if ($edges[$i] == $j || $edges[$j] == $i) return;
+
+    // $i と $j が繋がるので "$i の反対端 ($ei)" の反対端は "$j の反対端 ($ej)" になる ($j も同様)
+    $ei = $edges[$i];
+    $ej = $edges[$j];
+    $edges[$ei] = $ej;
+    $edges[$ej] = $ei;
+    // この接続により $i が中間点になる場合を考慮する ($j も同様)
+    // $i が未接続だった場合は $i == $ei なので手前の処理で正しく更新済み
+    if ($ei != $i) $edges[$i] = -1;
+    if ($ej != $j) $edges[$j] = -1;
+
+    $links[$i][] = $j;
+    $links[$j][] = $i;
+}
+
+function build_answer($data, $links) {
+    $answer = [];
+    $prev = PHP_INT_MAX;
+    $curr = 0;
+    while (count($links[$curr]) == 2) {
+        if (($next = $links[$curr][0]) == $prev) $next = $links[$curr][1];
+        $prev = $curr;
+        $curr = $next;
+        $answer[] = $data[$curr];
+    }
+    return $answer;
 }

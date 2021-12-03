@@ -34,6 +34,7 @@ class OrderList extends Entity
         'item_id' => true,
         'delivery_date' => true,
         'status' => true,
+        'priority' => true,
         'created' => true,
         'modified' => true,
         'na_nakamura_local_deliverer' => true,

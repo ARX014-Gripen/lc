@@ -32,7 +32,7 @@
     </a>
 </p>
 <section class="section">
-    <h1 class="title is-size-5-mobile is-size-3-tablet">ウーバーイーツのような仕組みを作りたかった。</h1>
+    <h1 class="title is-size-5-mobile is-size-3-tablet">ウーバーイーツやピザ配達システムのような仕組みを作りたかった。</h1>
     <h2 class="subtitle is-size-6-mobile is-size-4-tablet">
         障害を持つ前にジオコーディングに関わる仕事をしていたため<br>
         ポートフォリオとして小さなウーバーイーツのような仕組みを作ってみました。
@@ -100,6 +100,7 @@
             <li><del>毎日0時のCSVファイルへの書き出し。</del>2021/10/14実装済み</li>
             <li><del>他の自作ポートフォリオ（タグ付き商品管理）との連携。</del>2021/11/25実装済み</li>
             <li><del>メール本文に記載したURLを利用したアンケート機能。</del>2021/11/30実装済み</li>
+            <li><del>巡回セールスマン問題Greedy法による近似最短配達順番検索機能。</del>2021/12/3実装済み</li>
         </ul>
     </h2>
 </section>
@@ -115,6 +116,7 @@
             <li>タグによる商品管理機能</li>            
             <li>注文時のタグによる商品検索機能</li>
             <li>BIツール機能</li>
+            <li>巡回セールスマン問題Greedy法による近似最短配達順番検索機能。</li>
         </ul>
     </h2>
 </section>

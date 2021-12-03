@@ -37,6 +37,10 @@ class OrderList extends AbstractMigration
             'limit' => 255,
             'null' => false,
         ]);        
+        $table->addColumn('priority', 'integer', [
+            'default' => null,
+            'null' => false,
+        ]);
         $table->addColumn('created', 'datetime', [
             'default' => null,
             'null' => false,

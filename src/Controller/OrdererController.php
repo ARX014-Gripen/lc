@@ -412,6 +412,7 @@ class OrdererController extends AppController
                 $this->request = $this->request->withData('item_id', (int)$this->request->getData('item_id'));
                 $this->request = $this->request->withData('status', 'ordered');
                 $this->request = $this->request->withData('delivery_date',$delivery_date['year'].'/'.$delivery_date['month'].'/'.$delivery_date['day']);
+                $this->request = $this->request->withData('priority', 2147483647);
 
                 // 設定した情報を保存可能な情報に整形
                 $orderList = $this->OrderList->patchEntity($orderList, $this->request->getData());
