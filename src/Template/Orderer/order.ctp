@@ -129,7 +129,7 @@
             <div class="column"></div>
         </div>
         <div class="columns is-centered">
-            <div class="item-list colimn is-flex-grow-1">
+            <div class="item-list column is-flex-grow-1">
                 <div class="item columns is-mobile is-multiline">
                     <?php foreach ($Items as $Item): ?>
                         <?php $tags = explode(",", $Item->tag_names);?>
