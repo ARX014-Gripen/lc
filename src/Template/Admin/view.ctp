@@ -58,7 +58,7 @@
 <?= $this->Flash->render() ?>
 <section class="section">
     <div class="columns is-centered">
-        <table class="table" style="display: block;overflow-x: scroll;white-space: nowrap;-webkit-overflow-scrolling: touch;">
+        <table class="table" style="display: block;overflow-x: scroll;white-space: nowrap;-webkit-overflow-scrolling: touch; width:600px;">
             <tr>
                 <th scope="row"><?= __('注文番号') ?></th>
                 <td><?= $this->Number->format($fullOrder->id) ?></td>
@@ -87,7 +87,13 @@
                 <th scope="row"><?= __('ステータス') ?></th>
                 <td><?= h($fullOrder->status) ?></td>
             </tr>
+            <tr>
+                <th scope="row"><?= __('署名') ?></th>
+                <td><div><img src="data:image/png;base64,<?php echo base64_encode($signature_img);?>" alt="署名" style="transform:rotate(270deg);"></td></div></td>
+            </tr>
         </table>
+        <tr>
+        
     </div>
 </section>
 

@@ -28,6 +28,10 @@ class OrderList extends AbstractMigration
             'default' => null,
             'null' => true,
         ]);
+        $table->addColumn('signature_id', 'integer', [
+            'default' => null,
+            'null' => true,
+        ]);
         $table->addColumn('delivery_date', 'date', [
             'default' => null,
             'null' => false,

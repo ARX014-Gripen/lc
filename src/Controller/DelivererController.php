@@ -316,44 +316,104 @@ class DelivererController extends AppController
     public function delivered($id = null)
     {
         // 外部モデル呼び出し
-        $this->loadModels(['OrderList','Users','Items','Orderer']);
+        $this->loadModels(['OrderList','Users','Items','Orderer','Signature']);
 
-        // 注文IDの取得
-        $id = $this->request->getQuery('id');
+        // 新規署名情報の生成
+        $signature = $this->Signature->newEntity();
 
-        // 指定された注文IDの注文を取得
-        $order = $this->OrderList->get($id, [
-            'contain' => [],
-        ]);
+        // リクエストが「post」であったか確認
+        if ($this->request->is('post')) {
+          // リクエストが「post」であった場合
 
-        // 注文に排他済みを設定
-        $order->status = "delivered";
+            // ポストされたワンタイムチケットを取得する。
+            $ticket = $this->request->getData('ticket');
 
-        // 指定した注文を保存
-        if ($this->OrderList->save($order)) {
-            // 保存が成功した場合
+            // セッションオブジェクトの取得
+            $session = $this->getRequest()->getSession();
 
-            // メール本文に必要な情報を取得
-            $orderer = $this->Orderer->get($order->orderer_id);
-            $user = $this->Users->get($order->orderer_id);
-            $item = $this->Items->get($order->item_id);
-            $now = time();
-            $expiry_string = $now + (24 * 60 * 60);
-            $password = 'hogehoge';
-            $cipher = 'AES-256-ECB';
-            $encrypted_expiry_string = rawurlencode(openssl_encrypt($expiry_string, $cipher, $password));
-            $item_id = rawurlencode(openssl_encrypt($order->item_id, $cipher, $password));
-            $order_id = rawurlencode(openssl_encrypt($order->id, $cipher, $password));
+            // セッション変数に保存されたワンタイムチケットを取得する。
+            $save = $session->read('ticket');
 
-            // メール設定
-            $email = new Email('Sendgrid');
-            $email->setFrom(['konakera@gmail.com' => '配送サービス'])
-                ->setTransport('SendgridEmail')
-                ->setTo($user->email)
-            ->setSubject('アンケート回答のお願い');
+            // セッション変数を解放し、ブラウザの戻るボタンで戻った場合に備える
+            $session->delete('ticket');
 
-            // メール送信
-            if($email->send("
+            // ポストされたワンタイムチケットの中身が空だった、
+            // または、ポストすらされてこなかった場合、
+            // 不正なアクセスとみなして強制終了する。
+            if ($ticket === '') {
+            
+                // 不正なアクセスであることを通知
+                $this->Flash->error(__('不正なアクセスです。'));
+
+                // 注文一覧にリダイレクト
+                return $this->redirect(['action' => 'index']);
+
+            }
+        
+            // ブラウザの戻るボタンで戻った場合は、セッション変数が存在しないため、
+            // 2重送信とみなすことができる。
+            // また、不正なアクセスの場合もワンタイムチケットが同じになる確率は低いため、
+            // 不正アクセス防止にもなる。
+            if($ticket != $save){
+            
+                // 不正なアクセスであることを通知
+                $this->Flash->error(__('二重送信のため処理は実行されませんでした。'));
+
+                // 注文一覧にリダイレクト
+                return $this->redirect(['action' => 'index']);
+            }
+            
+            // 設定した情報を保存可能な情報に整形
+            $this->request = $this->request->withData('signature', base64_decode($this->request->getData('signature')));
+            $signature = $this->Signature->patchEntity($signature, $this->request->getData());
+
+            // 署名情報の保存
+            if ($this->Signature->save($signature)) {
+                // 保存処理に成功した場合
+
+                // 保存処理に成功したことを通知
+                $this->Flash->success(__('署名の登録が完了しました。'));
+                  
+            }else{
+                $this->Flash->error(__('署名の登録に失敗しました。'));
+                $this->set(compact('signature'));
+                return;
+            } 
+
+            // 指定された注文IDの注文を取得
+            $order = $this->OrderList->get($id, [
+                'contain' => [],
+            ]);
+
+            // 注文配達済みと署名を設定
+            $order->status = "delivered";
+            $order->signature_id = $signature->id;
+
+            // 指定した注文を保存
+            if ($this->OrderList->save($order)) {
+                // 保存が成功した場合
+
+                // メール本文に必要な情報を取得
+                $orderer = $this->Orderer->get($order->orderer_id);
+                $user = $this->Users->get($order->orderer_id);
+                $item = $this->Items->get($order->item_id);
+                $now = time();
+                $expiry_string = $now + (24 * 60 * 60);
+                $password = 'hogehoge';
+                $cipher = 'AES-256-ECB';
+                $encrypted_expiry_string = rawurlencode(openssl_encrypt($expiry_string, $cipher, $password));
+                $item_id = rawurlencode(openssl_encrypt($order->item_id, $cipher, $password));
+                $order_id = rawurlencode(openssl_encrypt($order->id, $cipher, $password));
+
+                // メール設定
+                $email = new Email('Sendgrid');
+                $email->setFrom(['konakera@gmail.com' => '配送サービス'])
+                    ->setTransport('SendgridEmail')
+                    ->setTo($user->email)
+                ->setSubject('アンケート回答のお願い');
+
+                // メール送信
+                if($email->send("
 {$orderer->name} 様
 
 {$item->name}
@@ -363,27 +423,103 @@ class DelivererController extends AppController
 下記のリンクよりアンケートのご回答を
 よろしくお願いいたします
 https://konakera.sakura.ne.jp/questionnaire/answer?item={$item_id}&order={$order_id}&expiry={$encrypted_expiry_string}
-            ")){
-                // メール送信が成功した場合
+                ")){
+                    // メール送信が成功した場合
 
-                // 保存処理に成功したことを通知
-                $this->Flash->success(__('アンケート依頼送信に成功しました。'));
-            }else{
-                // メール送信が失敗した場合
+                    // 保存処理に成功したことを通知
+                    $this->Flash->success(__('アンケート依頼送信に成功しました。'));
+                }else{
+                    // メール送信が失敗した場合
 
-                // 処理が失敗したことを通知
-                $this->Flash->error(__('アンケート送信に失敗しました。'));
-            }
+                    // 処理が失敗したことを通知
+                    $this->Flash->error(__('アンケート送信に失敗しました。'));
+                }
+
+                // 処理成功の通知
+                $this->Flash->success(__('ID'.$id.'の注文の配達を完了しました。'));
+
+                // 注文一覧へのリダイレクト
+                return $this->redirect(['action' => 'index']);
+            }            
             
-            // 処理成功の通知
-            $this->Flash->success(__('ID'.$id.'の注文の配達を完了しました。'));
+            // 処理失敗の通知
+            $this->Flash->error(__('ID'.$id.'の注文の配達を完了に失敗しました。'));
 
-            // 注文一覧へのリダイレクト
-            return $this->redirect(['action' => 'index']);
         }
 
-        // 処理失敗の通知
-        $this->Flash->error(__('ID'.$id.'の注文の配達を完了に失敗しました。'));
+        // テンプレートへのデータをセット
+        $this->set(compact('signature','id'));
+
+
+
+
+ //元のコード署名と二重痩身防止を実装後コピペ 
+//         // 注文IDの取得
+//         $id = $this->request->getQuery('id');
+
+//         // 指定された注文IDの注文を取得
+//         $order = $this->OrderList->get($id, [
+//             'contain' => [],
+//         ]);
+
+//         // 注文に排他済みを設定
+//         $order->status = "delivered";
+
+//         // 指定した注文を保存
+//         if ($this->OrderList->save($order)) {
+//             // 保存が成功した場合
+
+//             // メール本文に必要な情報を取得
+//             $orderer = $this->Orderer->get($order->orderer_id);
+//             $user = $this->Users->get($order->orderer_id);
+//             $item = $this->Items->get($order->item_id);
+//             $now = time();
+//             $expiry_string = $now + (24 * 60 * 60);
+//             $password = 'hogehoge';
+//             $cipher = 'AES-256-ECB';
+//             $encrypted_expiry_string = rawurlencode(openssl_encrypt($expiry_string, $cipher, $password));
+//             $item_id = rawurlencode(openssl_encrypt($order->item_id, $cipher, $password));
+//             $order_id = rawurlencode(openssl_encrypt($order->id, $cipher, $password));
+
+//             // メール設定
+//             $email = new Email('Sendgrid');
+//             $email->setFrom(['konakera@gmail.com' => '配送サービス'])
+//                 ->setTransport('SendgridEmail')
+//                 ->setTo($user->email)
+//             ->setSubject('アンケート回答のお願い');
+
+//             // メール送信
+//             if($email->send("
+// {$orderer->name} 様
+
+// {$item->name}
+// をご注文頂き、誠にありがとうございます。
+
+// つきましては、お手数ですが
+// 下記のリンクよりアンケートのご回答を
+// よろしくお願いいたします
+// https://konakera.sakura.ne.jp/questionnaire/answer?item={$item_id}&order={$order_id}&expiry={$encrypted_expiry_string}
+//             ")){
+//                 // メール送信が成功した場合
+
+//                 // 保存処理に成功したことを通知
+//                 $this->Flash->success(__('アンケート依頼送信に成功しました。'));
+//             }else{
+//                 // メール送信が失敗した場合
+
+//                 // 処理が失敗したことを通知
+//                 $this->Flash->error(__('アンケート送信に失敗しました。'));
+//             }
+            
+//             // 処理成功の通知
+//             $this->Flash->success(__('ID'.$id.'の注文の配達を完了しました。'));
+
+//             // 注文一覧へのリダイレクト
+//             return $this->redirect(['action' => 'index']);
+//         }
+
+//         // 処理失敗の通知
+//         $this->Flash->error(__('ID'.$id.'の注文の配達を完了に失敗しました。'));
     }
 
     // 配達順番検索

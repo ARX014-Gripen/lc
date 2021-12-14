@@ -84,7 +84,7 @@ class AdminController extends AppController
     public function view($id = null)
     {
         // 外部モデル呼び出し
-        $this->loadModels(['OrderList']);
+        $this->loadModels(['OrderList','Signature']);
 
         // 1件分の詳細情報付き注文情報を取得
         // ・注文表、注文者、配達者の結合表
@@ -95,12 +95,16 @@ class AdminController extends AppController
             'orderer_name'=>'Orderer.name',
             'deliverer_id'=>'Deliverer.id',
             'deliverer_name'=>'Deliverer.name',
+            'signature_id'=>'OrderList.signature_id',
             'item_name'=>'Items.name',
             'status'=>'OrderList.status',
-         ])->where(['OrderList.id' => $id])->first();
+        ])->where(['OrderList.id' => $id])->first();
+
+        $signature_img = $this->Signature->get($fullOrder->signature_id);
+        $signature_img = stream_get_contents($signature_img->signature);
 
         // テンプレートへのデータをセット
-        $this->set('fullOrder', $fullOrder);
+        $this->set(compact('fullOrder','signature_img'));
     }
 
     /**
