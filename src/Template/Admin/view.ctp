@@ -58,42 +58,52 @@
 <?= $this->Flash->render() ?>
 <section class="section">
     <div class="columns is-centered">
-        <table class="table" style="display: block;overflow-x: scroll;white-space: nowrap;-webkit-overflow-scrolling: touch; width:600px;">
+        <div class="item-list column is-flex-grow-1 is-half-desktop">
+            <table class="table" style="display: block;overflow-x: scroll;white-space: nowrap;-webkit-overflow-scrolling: touch;">
+                <tr>
+                    <th scope="row"><?= __('注文番号') ?></th>
+                    <td><?= $this->Number->format($fullOrder->id) ?></td>
+                </tr>
+                <tr>
+                    <th scope="row"><?= __('注文者ID') ?></th>
+                    <td><?= h($fullOrder->orderer_id) ?></td>
+                </tr>
+                <tr>
+                    <th scope="row"><?= __('注文者名') ?></th>
+                    <td><?= h($fullOrder->orderer_name) ?></td>
+                </tr>
+                <tr>
+                    <th scope="row"><?= __('配達者ID') ?></th>
+                    <td><?= h($fullOrder->deliverer_id) ?></td>
+                </tr>
+                <tr>
+                    <th scope="row"><?= __('配達者名') ?></th>
+                    <td><?= h($fullOrder->deliverer_name) ?></td>
+                </tr>
+                <tr>
+                    <th scope="row"><?= __('商品名') ?></th>
+                    <td><?= h($fullOrder->item_name) ?></td>
+                </tr>
+                <tr>
+                    <th scope="row"><?= __('ステータス') ?></th>
+                    <td><?= h($fullOrder->status) ?></td>
+                </tr>
+                <tr>
+                    <th scope="row"><?= __('署名') ?></th>
+                    <td>
+                        <?php
+                            if($signature_img){
+                                echo '<img src="data:image/png;base64,'.base64_encode($signature_img).'" alt="署名" style="transform:rotate(270deg);">';
+                            }
+                            else{
+                                echo '<div style="transform:rotate(270deg);hight:500px;width:300px;"></div>';
+                            }
+                        ?>
+                    </td>
+                </tr>
+            </table>
             <tr>
-                <th scope="row"><?= __('注文番号') ?></th>
-                <td><?= $this->Number->format($fullOrder->id) ?></td>
-            </tr>
-            <tr>
-                <th scope="row"><?= __('注文者ID') ?></th>
-                <td><?= h($fullOrder->orderer_id) ?></td>
-            </tr>
-            <tr>
-                <th scope="row"><?= __('注文者名') ?></th>
-                <td><?= h($fullOrder->orderer_name) ?></td>
-            </tr>
-            <tr>
-                <th scope="row"><?= __('配達者ID') ?></th>
-                <td><?= h($fullOrder->deliverer_id) ?></td>
-            </tr>
-            <tr>
-                <th scope="row"><?= __('配達者名') ?></th>
-                <td><?= h($fullOrder->deliverer_name) ?></td>
-            </tr>
-            <tr>
-                <th scope="row"><?= __('商品名') ?></th>
-                <td><?= h($fullOrder->item_name) ?></td>
-            </tr>
-            <tr>
-                <th scope="row"><?= __('ステータス') ?></th>
-                <td><?= h($fullOrder->status) ?></td>
-            </tr>
-            <tr>
-                <th scope="row"><?= __('署名') ?></th>
-                <td><div><img src="data:image/png;base64,<?php echo base64_encode($signature_img);?>" alt="署名" style="transform:rotate(270deg);"></td></div></td>
-            </tr>
-        </table>
-        <tr>
-        
+        </div>
     </div>
 </section>
 

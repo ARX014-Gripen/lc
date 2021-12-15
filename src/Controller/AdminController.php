@@ -100,8 +100,17 @@ class AdminController extends AppController
             'status'=>'OrderList.status',
         ])->where(['OrderList.id' => $id])->first();
 
-        $signature_img = $this->Signature->get($fullOrder->signature_id);
-        $signature_img = stream_get_contents($signature_img->signature);
+        $signature_img = $this->Signature->find(
+            'all'
+        )->where([
+            'Signature.id' => $fullOrder->signature_id
+        ])->first();
+
+        if($signature_img){
+            $signature_img = stream_get_contents($signature_img->signature);
+        }else{
+            $signature_img = null;
+        }
 
         // テンプレートへのデータをセット
         $this->set(compact('fullOrder','signature_img'));
