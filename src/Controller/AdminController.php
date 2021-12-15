@@ -240,13 +240,26 @@ class AdminController extends AppController
     public function delete($id = null)
     {
         // 外部モデル呼び出し
-        $this->loadModels(['OrderList']);
+        $this->loadModels(['OrderList','Signature']);
 
         // postかつdelete指定か検査
         $this->request->allowMethod(['post', 'delete']);
         
         // 注文一覧より指定された注文IDの注文を取得
         $orderList = $this->OrderList->get($id);
+
+        $signature = $this->Signature->get($orderList->signature_id);
+
+        // 指定した注文の削除
+        if (!$this->Signature->delete($signature)) {
+            // 削除処理が失敗した場合
+
+            // 削除処理失敗の通知
+            $this->Flash->error(__('ID'.$id.'の注文削除に失敗しました。'));
+
+            // 注文一覧へのリダイレクト
+            return $this->redirect(['action' => 'index']);
+        }
 
         // 指定した注文の削除
         if ($this->OrderList->delete($orderList)) {
