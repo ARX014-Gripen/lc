@@ -35,6 +35,9 @@
                     ?>
                 </span>
                 <span class="navbar-item">
+                    <?= $this->Html->link("直販", ['action' => 'reader'],['class'=>'button is-success has-text-weight-bold']) ?>               
+                </span>
+                <span class="navbar-item">
                     <?= $this->Html->link("注文一覧", ['action' => 'index'],['class'=>'button is-success has-text-weight-bold']) ?>               
                 </span>
                 <span class="navbar-item">

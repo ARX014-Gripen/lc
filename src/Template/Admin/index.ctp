@@ -21,6 +21,9 @@
         <div id="navbarMenuHeroC" class="navbar-menu" style="background-color:orange">
             <div class="navbar-end">
                 <span class="navbar-item">
+                    <?= $this->Html->link("直販", ['action' => 'reader'],['class'=>'button is-success has-text-weight-bold']) ?>               
+                </span>
+                <span class="navbar-item">
                     <?= $this->Html->link("BIツール", ['action' => 'bi'],['class'=>'button is-success has-text-weight-bold']) ?>               
                 </span>
                 <span class="navbar-item">

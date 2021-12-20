@@ -248,17 +248,19 @@ class AdminController extends AppController
         // 注文一覧より指定された注文IDの注文を取得
         $orderList = $this->OrderList->get($id);
 
-        $signature = $this->Signature->get($orderList->signature_id);
+        if($orderList->orderer_id!=null){
+            $signature = $this->Signature->get($orderList->signature_id);
 
-        // 指定した注文の削除
-        if (!$this->Signature->delete($signature)) {
-            // 削除処理が失敗した場合
-
-            // 削除処理失敗の通知
-            $this->Flash->error(__('ID'.$id.'の注文削除に失敗しました。'));
-
-            // 注文一覧へのリダイレクト
-            return $this->redirect(['action' => 'index']);
+            // 指定した注文の削除
+            if (!$this->Signature->delete($signature)) {
+                // 削除処理が失敗した場合
+    
+                // 削除処理失敗の通知
+                $this->Flash->error(__('ID'.$id.'の注文削除に失敗しました。'));
+    
+                // 注文一覧へのリダイレクト
+                return $this->redirect(['action' => 'index']);
+            }    
         }
 
         // 指定した注文の削除
@@ -413,6 +415,62 @@ class AdminController extends AppController
          // テンプレートへのデータをセット
          $this->set(compact('deliverer_ranking','role','role_count','item_ranking','tag_ranking','questionnaire','questionnaire_count','satisfaction_ranking'));
 
+    }
+
+    public function reader()
+    {
+        if($this->request->getQuery()==null){
+            
+        }else{
+            if(
+                $this->request->getQuery('item_id') == null ||
+                $this->request->getQuery('deliverer_id') == null ||
+                $this->request->getQuery('item_id') == '' ||
+                $this->request->getQuery('deliverer_id') == '' 
+            ){
+                // コードが正しくないことを通知
+                $this->Flash->error(__('正しいコードではありません。'));
+
+                echo var_dump($this->request->getQuery());
+
+                // QRコードリーダーへのリダイレクト
+                // return $this->redirect(['action' => 'reader']);           
+            }
+
+
+
+            $item_id = $this->request->getQuery('item_id');
+            $deliverer_id = $this->request->getQuery('deliverer_id'); 
+
+            // 外部モデル呼び出し
+            $this->loadModels(['OrderList']);
+
+            // 新規注文情報の生成
+            $orderList = $this->OrderList->newEntity();
+
+            // 本日の日付を取得
+            $today = date("Y-m-d");
+
+            $orderList = $this->OrderList->patchEntity($orderList, $this->request->getData());
+
+            $orderList->deliverer_id = $deliverer_id;
+            $orderList->item_id = $item_id;
+            $orderList->status = 'shop';
+            $orderList->delivery_date = $today;
+            $orderList->priority = 2147483647;
+
+            // 新規注文情報を保存
+            if ($this->OrderList->save($orderList)) {
+                // 保存処理に成功したことを通知
+                $this->Flash->success(__('会計が完了しました。次の商品を読み取ってください。'));
+            }else{
+                // 処理が失敗したことを通知
+                $this->Flash->error(__('会計処理に失敗しました。もう一度読み取ってください。'));
+            }
+
+            // QRコードリーダーへのリダイレクト
+            // return $this->redirect(['action' => 'reader']);
+        }
     }
 
     // ログアウト
