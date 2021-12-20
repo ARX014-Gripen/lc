@@ -96,7 +96,10 @@ class OrdererController extends AppController
                 'delivery_date'=>'OrderList.delivery_date',
                 'status' => 'OrderList.status',
                 'created' => 'OrderList.created'
-         ])->where(['orderer_id' => $this->Auth->user('id')])->order(['order_id' => 'DESC']));
+        ])->where([
+             'orderer_id' => $this->Auth->user('id'),
+             'status IS NOT' => 'shop'
+        ])->order(['order_id' => 'DESC']));
 
         // テンプレートへのデータをセット
         $this->set(compact('orderer','orderList'));
