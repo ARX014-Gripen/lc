@@ -53,6 +53,10 @@ class OrderListTable extends Table
             'foreignKey' => 'item_id',
         ]);
 
+        $this->belongsTo('Signature', [
+            'foreignKey' => 'signature_id',
+        ]);
+
         $this->hasOne('GroupByOrderList', [
             'className' => 'OrderList',
             'foreignKey' => 'id',

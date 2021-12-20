@@ -261,8 +261,22 @@ class UsersController extends AppController
      */
     public function delete($id = null)
     {
+        // 外部モデル呼び出し
+        $this->loadModels(['Users','OrderList','Signature']);
+
         // postかつdelete指定か検査
         $this->request->allowMethod(['post', 'delete']);
+
+        $orderLists = $this->OrderList->find(
+            'all'
+        )->where([
+            'OrderList.orderer_id' => $id
+        ])->toList();
+
+        foreach($orderLists as $key => $orderList){
+            $Signature = $this->Signature->get($orderList['signature_id']);
+            $this->Signature->delete($Signature );
+        }
 
         // ユーザー一覧より指定されたIDのユーザーを取得
         $User = $this->Users->get($id);

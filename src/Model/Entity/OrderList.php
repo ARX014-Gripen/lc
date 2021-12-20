@@ -40,5 +40,7 @@ class OrderList extends Entity
         'modified' => true,
         'na_nakamura_local_deliverer' => true,
         'na_nakamura_local_orderer' => true,
+        'na_nakamura_local_items' => true,
+        'na_nakamura_local_signature' => true,
     ];
 }

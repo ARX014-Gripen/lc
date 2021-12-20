@@ -60,10 +60,14 @@ class OrderList extends AbstractMigration
             'update' => 'cascade', 
         ]);
         $table->addForeignKey('orderer_id','na_nakamura_local_orderer','id',[
-            'delete' => 'SET NULL',
+            'delete' => 'cascade',
             'update' => 'cascade', 
         ]);
         $table->addForeignKey('item_id','na_nakamura_local_items','id',[
+            'delete' => 'SET_NULL',
+            'update' => 'cascade', 
+        ]);
+        $table->addForeignKey('signature_id','na_nakamura_local_signature','id',[
             'delete' => 'SET_NULL',
             'update' => 'cascade', 
         ]);

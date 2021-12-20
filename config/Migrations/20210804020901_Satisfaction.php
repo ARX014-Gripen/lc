@@ -32,6 +32,13 @@ class Satisfaction extends AbstractMigration
             'default' => null,
             'null' => false,
         ]);    
+
+        // 外部キーを定義に追加
+        $table->addForeignKey('order_id','na_nakamura_local_order_list','id',[
+            'delete' => 'cascade',
+            'update' => 'cascade', 
+        ]);
+
         // テーブルを作成
         $table->create();
     }
