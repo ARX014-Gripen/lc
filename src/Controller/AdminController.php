@@ -249,18 +249,24 @@ class AdminController extends AppController
         $orderList = $this->OrderList->get($id);
 
         if($orderList->orderer_id!=null){
-            $signature = $this->Signature->get($orderList->signature_id);
+            $signature = $this->Signature->find(
+                'all'
+            )->where([
+                'Signature.id' => $orderList->signature_id
+            ])->first();
 
-            // 指定した注文の削除
-            if (!$this->Signature->delete($signature)) {
-                // 削除処理が失敗した場合
-    
-                // 削除処理失敗の通知
-                $this->Flash->error(__('ID'.$id.'の注文削除に失敗しました。'));
-    
-                // 注文一覧へのリダイレクト
-                return $this->redirect(['action' => 'index']);
-            }    
+            if($signature){
+                // 指定した注文の削除
+                if (!$this->Signature->delete($signature)) {
+                    // 削除処理が失敗した場合
+                
+                    // 削除処理失敗の通知
+                    $this->Flash->error(__('ID'.$id.'の注文削除に失敗しました。'));
+                
+                    // 注文一覧へのリダイレクト
+                    return $this->redirect(['action' => 'index']);
+                } 
+            }  
         }
 
         // 指定した注文の削除
@@ -379,7 +385,7 @@ class AdminController extends AppController
 
 
         // アンケート：解答率
-        $order_count = $this->OrderList->find('all')->count();
+        $order_count = $this->OrderList->find('all')->where(['OrderList.status IS NOT' => 'shop' ])->count();
         $answer_count = $this->Satisfaction->find('all')->count();
         $questionnaire = array();
         $questionnaire_count = array();
