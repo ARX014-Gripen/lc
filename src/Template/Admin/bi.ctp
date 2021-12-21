@@ -116,6 +116,29 @@
                         <?php endforeach; ?>
                     </div>
                     <div class="column is-full-mobile is-half-tablet is-half-desktop">
+                        <h2 class="subtitle is-size-6-mobile is-size-4-tablet">直販数ランキング</h2>
+                        <?php
+                            $rank = 1;
+                            $cnt = 1;
+                            $bef_point = 0;
+                        ?>
+                        <?php foreach ($shop_ranking as $deliverer): ?>
+                            <?php
+                                if($deliverer->deliverer_name==null){
+                                    continue;
+                                }
+                                if($bef_point != (int)$deliverer->order_count){
+                                    $rank = $cnt;
+                                }
+                            ?>
+                            <div style="padding-left: 35px;"><?= h($rank.'．') ?><?= mb_strimwidth( h($deliverer->deliverer_name), 0, 30, '…', 'UTF-8' ); ?></div>
+                            <?php
+                                $bef_point = (int)$deliverer->order_count;
+                                $cnt++;
+                            ?>
+                        <?php endforeach; ?>
+                    </div>
+                    <div class="column is-full-mobile is-half-tablet is-half-desktop">
                         <h2 class="subtitle is-size-6-mobile is-size-4-tablet">商品ランキング</h2>
                         <?php
                             $rank = 1;

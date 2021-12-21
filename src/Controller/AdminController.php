@@ -318,6 +318,8 @@ class AdminController extends AppController
             'order_count' => $orderList->func()->count('*'),
             'deliverer_id' => 'OrderList.deliverer_id',
             'deliverer_name' => 'Deliverer.name'
+        ])->where([
+            'OrderList.status IS NOT' => 'shop'
         ])->group(
             'OrderList.deliverer_id'
         )->order([
@@ -385,7 +387,7 @@ class AdminController extends AppController
 
 
         // アンケート：解答率
-        $order_count = $this->OrderList->find('all')->where(['OrderList.status IS NOT' => 'shop' ])->count();
+        $order_count = $this->OrderList->find('all')->where(['OrderList.status' => 'delivered'])->count();
         $answer_count = $this->Satisfaction->find('all')->count();
         $questionnaire = array();
         $questionnaire_count = array();
@@ -417,9 +419,25 @@ class AdminController extends AppController
             'item_point' => 'Point.item_id_from_satisfaction'
         ])->limit(10);
 
+        // 注文数ランキング
+        // 注文表、配達者の結合表
+        $orderList = $this->OrderList->find();
+        $shop_ranking = $orderList->contain(['Deliverer']
+        )->select([
+            'order_count' => $orderList->func()->count('*'),
+            'deliverer_id' => 'OrderList.deliverer_id',
+            'deliverer_name' => 'Deliverer.name'
+        ])->where([
+            'OrderList.status' => 'shop'
+        ])->group(
+            'OrderList.deliverer_id'
+        )->order([
+            'order_count' => 'DESC',
+            'deliverer_id' => 'ASC'
+        ])->limit(10)->all();  
 
          // テンプレートへのデータをセット
-         $this->set(compact('deliverer_ranking','role','role_count','item_ranking','tag_ranking','questionnaire','questionnaire_count','satisfaction_ranking'));
+         $this->set(compact('deliverer_ranking','role','role_count','item_ranking','tag_ranking','questionnaire','questionnaire_count','satisfaction_ranking','shop_ranking'));
 
     }
 
