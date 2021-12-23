@@ -90,7 +90,7 @@
         </ol>
     </h2>
 </section>
-<section class="section">
+<!-- <section class="section">
     <h1 class="title is-size-5-mobile is-size-3-tablet">今後について</h1>
     <h2 class="subtitle is-size-6-mobile is-size-4-tablet">
         以下の機能を追加予定です。<br><br>
@@ -105,7 +105,7 @@
             <li><del>QRコードリーダーによる簡易会計機能。</del>2021/12/20実装済み</li>
         </ul>
     </h2>
-</section>
+</section> -->
 <section class="section">
     <h1 class="title is-size-5-mobile is-size-3-tablet">実装されている機能</h1>
     <h2 class="subtitle is-size-6-mobile is-size-4-tablet">
