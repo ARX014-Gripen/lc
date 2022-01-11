@@ -209,12 +209,54 @@ class TagsController extends AppController
     public function delete($id = null)
     {
         $this->request->allowMethod(['post', 'delete']);
-        $tag = $this->Tags->get($id);
-        if ($this->Tags->delete($tag)) {
-            $this->Flash->success(__('ID'.$id.'のタグ削除が完了しました。'));
-        } else {
-            $this->Flash->error(__('ID'.$id.'のタグ削除に失敗しました。'));
+
+        // 外部モデル呼び出し
+        $this->loadModels(['Tags','Items','ItemsToTags']);
+
+        // タグIDからタグ名抽出
+        $tagName = $this->Tags->find('all')->where(['Tags.id'=>$id])->first();
+
+        // タグによる検索
+        $subqueryA = $this->ItemsToTags->find(
+        )->contain([
+            'Tags'
+        ])->where([
+            'Tags.name IN' => $tagName->name
+        ])->select([
+            'item_id_from_tag' => 'ItemsToTags.item_id',
+            'tag_id_from_tag' => 'ItemsToTags.tag_id'
+        ])->group(
+            'item_id_from_tag'
+        );
+
+        $tag = $this->Items->find('all',[
+            'group' => 'Items.id having count(Items.id) = 1'
+        ])->join([
+            'SearchTagItems' => [
+                'table' => $subqueryA,
+                'type' => 'inner',
+                'conditions' => 'Items.id = SearchTagItems.item_id_from_tag'
+            ]
+        ])->matching(
+            "Tags", function($q){
+                return $q;
+            }
+        )->select([
+            'item_id' => 'Items.id',
+            'item_name' => 'Items.name'
+        ])->first();
+
+        if($tag){
+            $this->Flash->error(__('ID'.$id.'のタグだけが付けられている商品があります。対象の商品削除し、再度実行してください。対象は'.$tag->item_name.'など。'));
         }
+        else{
+            $tag = $this->Tags->get($id);
+            if ($this->Tags->delete($tag)) {
+                $this->Flash->success(__('ID'.$id.'のタグ削除が完了しました。'));
+            } else {
+                $this->Flash->error(__('ID'.$id.'のタグ削除に失敗しました。'));
+            }
+        }   
 
         return $this->redirect(['action' => 'index']);
     }

@@ -103,7 +103,7 @@ class ItemsController extends AppController
 
             $Items = $this->paginate(
                 $this->Items->find('all',[
-                    'group' => 'Items.id having count(Items.id) >= '.count($selectTags)
+                    'group' => 'Items.id having count(Items.id) = '.count($selectTags)
                 ])->join([
                     'SearchTagItems' => [
                         'table' => $subqueryA,
