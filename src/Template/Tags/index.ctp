@@ -96,12 +96,12 @@
         </div>
     </div>
     <div class="columns is-centered">
-        <div class="level-item has-text-centered">
-             <?= $this->Paginator->first(__('最初')) ?>
-             <?= $this->Paginator->prev(__('前')) ?>
-             <?= $this->Paginator->numbers() ?>
-             <?= $this->Paginator->next(__('次')) ?>
-             <?= $this->Paginator->last(__('最後')) ?>
+        <div class="level-item has-text-centered is-flex-direction-row">
+             <div><?= $this->Paginator->first(__('最初')) ?></div>
+             <div><?= $this->Paginator->prev(__('前')) ?></div>
+             <div><?= $this->Paginator->numbers() ?></div>
+             <div><?= $this->Paginator->next(__('次')) ?></div>
+             <div><?= $this->Paginator->last(__('最後')) ?></div>
         </div>
     </div>
     <div class="columns is-centered">
