@@ -98,7 +98,6 @@
                         <div class="control">
                             <div class="select is-multiple is-small">
                                 <select multiple size="3" name="tags[]">
-                                    <option value="">タグ検索を行わない</option>
                                     <?php foreach ($Tags as $Tag): ?>
                                         <?php
                                             $count=0;

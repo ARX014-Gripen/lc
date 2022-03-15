@@ -470,14 +470,18 @@ class OrdererController extends AppController
         // フリーワードとタグの取得
         if($this->request->getQuery()==null){
             $keyword = null;
-            $selectTags = [''];
+            $selectTags = ['タグ検索を行わない'];
         }else{
             $keyword = $this->request->getQuery('keyword');
             if($this->request->getQuery('tags')==null){
-                $selectTags = [''];
+                $selectTags = ['タグ検索を行わない'];
             }else{
                 $selectTags = $this->request->getQuery('tags');
             }
+        }
+
+        if($selectTags==null){
+            $selectTags[0]='タグ検索を行わない';
         }
 
         // 商品一覧を取得
@@ -487,7 +491,7 @@ class OrdererController extends AppController
         // ※タグ検索の有無でmatchingとgroupの内容を変更
         //  「this is incompatible with sql_mode=only_full_group_by」が発生したため
         //  「only_full_group_by」をoffにしてあります
-        if($selectTags[0]==''){
+        if($selectTags[0]=='タグ検索を行わない'){
             // キーワード検索のみ
 
             $Items = $this->paginate(
@@ -559,7 +563,15 @@ class OrdererController extends AppController
         }
 
         // タグ一覧の取得
-        $Tags = $this->Tags->find('all');
+        $Tags = $this->Tags->find('all')->ToArray();
+
+        // タグ検索選択欄の初期化
+        $object = new \stdClass();
+        $object->id = 0;
+        $object->name = "タグ検索を行わない";
+        $object->created = date("YmdHis");;
+        $object->modified = date("YmdHis");;
+        array_unshift( $Tags, $object);
 
         // テンプレートへのデータをセット
         $this->set(compact('Items','Tags','selectTags','orderList'));
