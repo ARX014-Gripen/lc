@@ -38,6 +38,12 @@
                     ) ?>                 
                 </span>
                 <span class="navbar-item">
+                <?= $this->Html->link("商品情報変更", ['action' => 'edit', $Item->id],['class'=>'button is-warning has-text-weight-bold']) ?>               
+                </span>
+                <span class="navbar-item">
+                    <?= $this->Html->link(__('商品削除'),'https://konakera.sakura.ne.jp/items/delete?id='.$Item->id, ['class'=>'button is-danger has-text-weight-bold','confirm' => __('表示中の商品を削除しますか?')]) ?>
+                </span>
+                <span class="navbar-item">
                     <?= $this->Html->link("直販", ['controller' => 'Admin','action' => 'reader'],['class'=>'button is-success has-text-weight-bold']) ?>               
                 </span>
                 <span class="navbar-item">

@@ -32,7 +32,7 @@
                     <?= $this->Form->postLink(
                         'ユーザー削除',
                         ['action' => 'delete', $User->id],
-                        ['class' => 'button is-danger has-text-weight-bold','confirm' => __('表示中のユーザーを削除を削除しますか?')]
+                        ['class' => 'button is-danger has-text-weight-bold','confirm' => __('表示中のユーザーを削除しますか?')]
                         )
                     ?>
                 </span>

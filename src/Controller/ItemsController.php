@@ -199,63 +199,76 @@ class ItemsController extends AppController
                 return $this->redirect(['action' => 'index']);
             }
 
-            // 現在年月日時を取得
-            $datetime = date("YmdHis");
+            $existing = $this->Items->find(
+                'all'
+            )->where([
+                'Items.name' => $this->request->getData('name')
+            ])->toList();
 
-            // ファイル保存
-            $file = $this->request->getData('image');
-            $filePath = '../webroot/img/'.$datetime.$file['name']; 
-            move_uploaded_file($file['tmp_name'], $filePath);
-
-            $connection = ConnectionManager::get('default');
-            // トランザクション開始
-            $connection->begin();
-            try {
-
-                // 設定した情報を保存可能な情報に整形
-                $data = [
-                    'name' => $this->request->getData('name'),
-                    'image' => $datetime.$file['name'] 
-                ];
-                $Item = $this->Items->patchEntity($Item, $data);
-            
-                // 商品の保存
-                if ($this->Items->save($Item)) {
-                    // 保存処理に成功した場合
+            if($existing==null){
                 
-                    // 保存した商品のIDを取得
-                    $insertId =  $Item->id;
+                // 現在年月日時を取得
+                $datetime = date("YmdHis");
 
-                    // 選択したタグ情報との商品の紐付け
-                    $tags = $this->request->getData("tags");
-                    foreach($tags as $tag){
-                        $ItemToTag = $this->ItemsToTags->newEntity();
-                        $ItemToTag->item_id = $insertId;
-                        $ItemToTag->tag_id = (int)$tag;
-                        $this->ItemsToTags->save($ItemToTag);
+                // ファイル保存
+                $file = $this->request->getData('image');
+                $filePath = '../webroot/img/'.$datetime.$file['name']; 
+                move_uploaded_file($file['tmp_name'], $filePath);
+
+                $connection = ConnectionManager::get('default');
+                // トランザクション開始
+                $connection->begin();
+                try {
+
+                    // 設定した情報を保存可能な情報に整形
+                    $data = [
+                        'name' => $this->request->getData('name'),
+                        'image' => $datetime.$file['name'] 
+                    ];
+                    $Item = $this->Items->patchEntity($Item, $data);
+                
+                    // 商品の保存
+                    if ($this->Items->save($Item)) {
+                        // 保存処理に成功した場合
+                    
+                        // 保存した商品のIDを取得
+                        $insertId =  $Item->id;
+
+                        // 選択したタグ情報との商品の紐付け
+                        $tags = $this->request->getData("tags");
+                        foreach($tags as $tag){
+                            $ItemToTag = $this->ItemsToTags->newEntity();
+                            $ItemToTag->item_id = $insertId;
+                            $ItemToTag->tag_id = (int)$tag;
+                            $this->ItemsToTags->save($ItemToTag);
+                        }
+                    
+                        // 保存処理に成功したことを通知
+                        $this->Flash->success(__('商品の登録が完了しました。'));
+                    
+                        // コミット
+                        $connection->commit();
+
+                        // 商品一覧へリダイレクト
+                        return $this->redirect(['action' => 'index']);
                     }
-                
-                    // 保存処理に成功したことを通知
-                    $this->Flash->success(__('商品の登録が完了しました。'));
-                
-                    // コミット
-                    $connection->commit();
 
-                    // 商品一覧へリダイレクト
-                    return $this->redirect(['action' => 'index']);
+                    $connection->rollback();
+                
+                } catch(\Exception $e) {
+                    // 例外に対する処理
+
+                    // ロールバック
+                    $connection->rollback();
                 }
 
-                $connection->rollback();
-            
-            } catch(\Exception $e) {
-                // 例外に対する処理
-
-                // ロールバック
-                $connection->rollback();
+                // 処理が失敗したことを通知
+                $this->Flash->error(__('商品の登録に失敗しました。'));
+            }else{
+                $this->Flash->error(__('その商品名は既に登録されいます。'));
             }
 
-            // 処理が失敗したことを通知
-            $this->Flash->error(__('商品の登録に失敗しました。'));
+            
         }
 
         // タグ一覧の取得
@@ -325,70 +338,82 @@ class ItemsController extends AppController
                 return $this->redirect(['action' => 'index']);
             }
 
-            $connection = ConnectionManager::get('default');
-            // トランザクション開始
-            $connection->begin();
-            try {
-                // 画像ファイルに変更があった場合
-                $file = $this->request->getData('image');
-                if($file['name'] != null){
+            $existing = $this->Items->find(
+                'all'
+            )->where([
+                'Items.name' => $this->request->getData('name')
+            ])->where([
+                'Items.id IS NOT' => $id
+            ])->toList();
+
+            if($existing==null){
+                $connection = ConnectionManager::get('default');
+                // トランザクション開始
+                $connection->begin();
+                try {
+                    // 画像ファイルに変更があった場合
+                    $file = $this->request->getData('image');
+                    if($file['name'] != null){
+                    
+                        // 現在年月日時を取得
+                        $datetime = date("YmdHis");
                 
-                    // 現在年月日時を取得
-                    $datetime = date("YmdHis");
-            
-                    // ファイル保存
-                    $filePath = '../webroot/img/'.$datetime.$file['name']; 
-                    move_uploaded_file($file['tmp_name'], $filePath);
-
-                    // 参照指定書き換え
-                    $Item->image = $datetime.$file['name'];
-                }
-
-                // 商品名変更
-                $Item->name = $this->request->getData('name');
-
-                // 変更した商品の保存
-                if ($this->Items->save($Item)) {
-                    // 保存処理に成功した場合
-
-                    // 商品に紐づくタグを一旦削除
-                    $this->ItemsToTags->deleteAll(['item_id'=>$Item->id],false);
-
-                    // 保存した商品のIDを取得
-                    $insertId =  $Item->id;
-
-                    // 選択したタグ情報との商品の紐付け
-                    $tags = $this->request->getData("tags");
-                    foreach($tags as $tag){
-                        $ItemToTag = $this->ItemsToTags->newEntity();
-                        $ItemToTag->item_id = $insertId;
-                        $ItemToTag->tag_id = (int)$tag;
-                        $this->ItemsToTags->save($ItemToTag);
+                        // ファイル保存
+                        $filePath = '../webroot/img/'.$datetime.$file['name']; 
+                        move_uploaded_file($file['tmp_name'], $filePath);
+    
+                        // 参照指定書き換え
+                        $Item->image = $datetime.$file['name'];
                     }
-
-                    // コミット
-                    $connection->commit();
-
-                    // 保存処理に成功したことを通知
-                    $this->Flash->success(__('ID'.$id.'の商品情報変更に成功しました。'));
-                                    
-                    // 商品一覧へリダイレクト
-                    return $this->redirect(['action' => 'index']);
+    
+                    // 商品名変更
+                    $Item->name = $this->request->getData('name');
+    
+                    // 変更した商品の保存
+                    if ($this->Items->save($Item)) {
+                        // 保存処理に成功した場合
+    
+                        // 商品に紐づくタグを一旦削除
+                        $this->ItemsToTags->deleteAll(['item_id'=>$Item->id],false);
+    
+                        // 保存した商品のIDを取得
+                        $insertId =  $Item->id;
+    
+                        // 選択したタグ情報との商品の紐付け
+                        $tags = $this->request->getData("tags");
+                        foreach($tags as $tag){
+                            $ItemToTag = $this->ItemsToTags->newEntity();
+                            $ItemToTag->item_id = $insertId;
+                            $ItemToTag->tag_id = (int)$tag;
+                            $this->ItemsToTags->save($ItemToTag);
+                        }
+    
+                        // コミット
+                        $connection->commit();
+    
+                        // 保存処理に成功したことを通知
+                        $this->Flash->success(__('ID'.$id.'の商品情報変更に成功しました。'));
+                                        
+                        // 商品一覧へリダイレクト
+                        return $this->redirect(['action' => 'index']);
+                    }
+    
+                    // ロールバック
+                    $connection->rollback();
+                
+                } catch(\Exception $e) {
+                    // 例外に対する処理
+    
+                    echo $e->getMessage();
+                    // ロールバック
+                    $connection->rollback();
                 }
-
-                // ロールバック
-                $connection->rollback();
-            
-            } catch(\Exception $e) {
-                // 例外に対する処理
-
-                echo $e->getMessage();
-                // ロールバック
-                $connection->rollback();
+              
+                // 処理が失敗したことを通知
+                $this->Flash->error(__('ID'.$id.'の商品情報変更に失敗しました。'));    
+            }else{
+                $this->Flash->error(__('その商品名は既に登録されいます。'));
             }
-          
-            // 処理が失敗したことを通知
-            $this->Flash->error(__('ID'.$id.'の商品情報変更に失敗しました。'));
         }
 
         // 商品一覧より指定された商品に紐づいているタグを取得
