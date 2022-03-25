@@ -21,7 +21,7 @@ class QuestionnaireController extends AppController
     public function answer()
     {
         // 外部モデル呼び出し
-        $this->loadModels(['Satisfaction']);
+        $this->loadModels(['Satisfaction','OrderList']);
 
         // 新規回答の生成
         $answer = $this->Satisfaction->newEntity();
@@ -104,11 +104,13 @@ class QuestionnaireController extends AppController
                 return $this->redirect(['controller' => 'Users','action' => 'login']);
             }
 
+            $order = $this->OrderList->get((int)$order_id);
+
             // 新規回答の値の設定
             $answer->item_id = $item_id;
             $answer->order_id = $order_id;
             $answer->level = $this->request->getData('answer');
-            $answer->delivery_datetime = $now;
+            $answer->delivery_datetime = $order->delivery_date;
 
             // 配達者情報の保存
             if ($this->Satisfaction->save($answer)) {
