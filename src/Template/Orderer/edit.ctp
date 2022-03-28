@@ -28,7 +28,7 @@
         <div id="navbarMenuHeroC" class="navbar-menu" style="background-color:orange">
             <div class="navbar-end">
                 <span class="navbar-item">
-                    <?= $this->Html->link("配達予定", ['action' => 'index'],['class'=>'button is-info has-text-weight-bold']) ?>               
+                    <?= $this->Html->link("注文一覧", ['action' => 'index'],['class'=>'button is-info has-text-weight-bold']) ?>               
                 </span>
                 <span class="navbar-item">
                     <?= $this->Html->link("注文履歴", ['action' => 'history'],['class'=>'button is-info has-text-weight-bold']) ?>               
