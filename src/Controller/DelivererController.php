@@ -316,7 +316,7 @@ class DelivererController extends AppController
     public function delivered($id = null)
     {
         // 外部モデル呼び出し
-        $this->loadModels(['OrderList','Users','Items','Orderer','Signature']);
+        $this->loadModels(['OrderList','Users','Items','Orderer','Signature','Deliverer']);
 
         // 新規署名情報の生成
         $signature = $this->Signature->newEntity();
@@ -447,8 +447,12 @@ https://konakera.sakura.ne.jp/questionnaire/answer?item={$item_id}&order={$order
 
         }
 
+        $deliverer = $this->Deliverer->get($this->Auth->user('id'), [
+            'contain' => [],
+        ]);
+
         // テンプレートへのデータをセット
-        $this->set(compact('signature','id'));
+        $this->set(compact('signature','id','deliverer'));
 
 
 
